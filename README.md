@@ -33,9 +33,19 @@ te titules. Este negocio te paga hoy y te construye la red para tu carrera.
 
 ---
 
-## Tus enlaces en internet (ya publicados, sin costo)
+## Publicar tus enlaces gratis (4 clics, una sola vez)
 
-Este repositorio se publica solo con GitHub Pages. Estos son **tus tres enlaces de trabajo**:
+GitHub publica este repositorio como sitio web sin costo, pero hay que activarlo a mano una
+vez. Desde tu computadora o tu celular:
+
+1. Entra a https://github.com/eliasac041129-cloud/NEGOCIO/settings/pages
+2. En **Source**, elige `Deploy from a branch`.
+3. En **Branch**, selecciona `main` y la carpeta `/ (root)`.
+4. Presiona **Save**.
+
+Espera dos o tres minutos y recarga. Listo, ya estás en internet.
+
+Estos son entonces **tus tres enlaces de trabajo**:
 
 - **Portafolio:** https://eliasac041129-cloud.github.io/NEGOCIO/
 - **Generador de documentos:** https://eliasac041129-cloud.github.io/NEGOCIO/demos/generador-documentos/
@@ -43,7 +53,7 @@ Este repositorio se publica solo con GitHub Pages. Estos son **tus tres enlaces 
 
 Guárdalos en las notas de tu celular. Los vas a mandar decenas de veces.
 
-Cada vez que se actualice el repositorio, el sitio se actualiza solo en un par de minutos.
+Una vez activado, cada cambio en el repositorio se refleja solo en el sitio en un par de minutos.
 No hay hospedaje que pagar ni dominio que renovar. Si más adelante quieres un dominio propio
 tipo `elias.legal`, cuesta alrededor de $200 al año, pero **no lo necesitas para empezar**:
 consigue tus primeros clientes con este enlace y compra el dominio con ese dinero.
