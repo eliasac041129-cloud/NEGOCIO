@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aguilar Mendoza y Asociados | Abogados en Nezahualcóyotl</title>
+<meta name="description" content="Despacho jurídico en Ciudad Nezahualcóyotl. Derecho familiar, laboral, civil y amparo. Primera consulta sin costo.">
+<style>
+  :root{
+    --tinta:#12181f;
+    --gris:#5a6472;
+    --linea:#e5e8ec;
+    --crema:#f8f7f4;
+    --oro:#9b7b3f;
+    --azul:#1d3557;
+    --verde:#128c7e;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;line-height:1.65;color:var(--tinta);background:#fff;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .contenedor{max-width:1080px;margin:0 auto;padding:0 24px}
+  .serif{font-family:Georgia,"Times New Roman",serif}
+
+  .aviso-demo{
+    background:#fff4d6;border-bottom:1px solid #e8d49b;
+    padding:9px 16px;text-align:center;font-size:13px;color:#6b5316;
+  }
+  .aviso-demo b{color:#4d3b0f}
+
+  nav{background:var(--azul);color:#fff}
+  nav .contenedor{display:flex;align-items:center;justify-content:space-between;height:78px;gap:20px}
+  .marca{text-decoration:none;color:#fff}
+  .marca .nombre{font-family:Georgia,serif;font-size:19px;font-weight:700;letter-spacing:.3px;display:block;line-height:1.2}
+  .marca .sub{font-size:11px;letter-spacing:2.4px;text-transform:uppercase;color:#a9bcd4}
+  .nav-links{display:flex;gap:26px;align-items:center}
+  .nav-links a{color:#cfd9e6;text-decoration:none;font-size:14px}
+  .nav-links a:hover{color:#fff}
+  @media(max-width:800px){.nav-links a:not(.btn){display:none}}
+
+  .btn{
+    display:inline-block;background:var(--oro);color:#fff;
+    padding:12px 22px;border-radius:4px;text-decoration:none;
+    font-size:14px;font-weight:600;transition:background .15s;
+  }
+  .btn:hover{background:#836430}
+  .btn-wa{background:var(--verde)}
+  .btn-wa:hover{background:#0e6b60}
+  .btn-linea{background:transparent;border:1px solid rgba(255,255,255,.45);color:#fff}
+  .btn-linea:hover{background:rgba(255,255,255,.1)}
+
+  .portada{
+    background:linear-gradient(rgba(18,24,31,.80),rgba(18,24,31,.86)),
+      radial-gradient(circle at 25% 20%, #35506f 0%, #1d3557 45%, #12181f 100%);
+    color:#fff;padding:96px 0 88px;
+  }
+  .portada h1{font-family:Georgia,serif;font-size:clamp(30px,5vw,47px);line-height:1.18;margin:0 0 20px;max-width:21ch}
+  .portada p{font-size:18px;color:#c6cfdb;max-width:56ch;margin:0 0 32px}
+  .acciones{display:flex;gap:12px;flex-wrap:wrap}
+  .insignias{margin-top:40px;display:flex;gap:30px;flex-wrap:wrap;font-size:13.5px;color:#93a3b8}
+  .insignias div{padding-left:18px;position:relative}
+  .insignias div::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;background:var(--oro);border-radius:50%}
+
+  section{padding:76px 0}
+  .titulo-seccion{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.6px;color:var(--oro);margin:0 0 12px}
+  h2{font-family:Georgia,serif;font-size:clamp(24px,3.4vw,33px);margin:0 0 16px;line-height:1.28}
+  .intro{color:var(--gris);max-width:62ch;margin:0 0 44px;font-size:16.5px}
+
+  .rejilla{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+  .area{border:1px solid var(--linea);border-left:3px solid var(--oro);border-radius:0 8px 8px 0;padding:26px;background:#fff;transition:box-shadow .18s}
+  .area:hover{box-shadow:0 6px 20px rgba(18,24,31,.08)}
+  .area h3{font-family:Georgia,serif;margin:0 0 10px;font-size:19px}
+  .area p{margin:0 0 14px;color:var(--gris);font-size:15px}
+  .area ul{margin:0;padding-left:20px;color:var(--gris);font-size:14.5px}
+  .area li{margin-bottom:5px}
+
+  .nosotros{background:var(--crema)}
+  .dos-columnas{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:start}
+  @media(max-width:860px){.dos-columnas{grid-template-columns:1fr;gap:38px}}
+  .nosotros p{color:var(--gris);font-size:16.5px}
+  .cifras{display:grid;gap:26px}
+  .cifra{border-left:3px solid var(--oro);padding-left:18px}
+  .cifra .n{font-family:Georgia,serif;font-size:32px;font-weight:700;color:var(--azul);line-height:1.1}
+  .cifra .t{font-size:14px;color:var(--gris)}
+
+  .pasos{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:30px;counter-reset:p}
+  .paso{counter-increment:p}
+  .paso::before{
+    content:counter(p);display:flex;align-items:center;justify-content:center;
+    width:36px;height:36px;border-radius:50%;background:var(--azul);color:#fff;
+    font-family:Georgia,serif;font-weight:700;margin-bottom:14px;
+  }
+  .paso h3{margin:0 0 7px;font-size:16.5px}
+  .paso p{margin:0;color:var(--gris);font-size:14.5px}
+
+  .contacto{background:var(--azul);color:#fff}
+  .contacto .titulo-seccion{color:#d3b877}
+  .contacto h2{color:#fff}
+  .contacto .intro{color:#b8c5d6}
+  .datos{display:grid;gap:22px;font-size:15.5px}
+  .dato .et{font-size:11.5px;text-transform:uppercase;letter-spacing:1.4px;color:#8fa3bd;margin-bottom:4px}
+  .dato a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.3)}
+  .mapa{border:0;width:100%;height:290px;border-radius:8px;filter:grayscale(.25)}
+  .caja-mapa{background:#16283f;border-radius:8px;padding:14px}
+
+  footer{background:#0d1319;color:#7c8899;padding:30px 0;font-size:13.5px}
+  footer .contenedor{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  .wa-flotante{
+    position:fixed;bottom:22px;right:22px;z-index:60;background:var(--verde);color:#fff;
+    width:56px;height:56px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.25);text-decoration:none;font-size:25px;
+  }
+</style>
+</head>
+<body>
+
+<div class="aviso-demo">
+  <b>Sitio de muestra.</b> El despacho aquí presentado es ficticio. Este ejemplo sirve para mostrar
+  el tipo de página que puedo construir para un despacho real.
+</div>
+
+<nav>
+  <div class="contenedor">
+    <a href="#" class="marca">
+      <span class="nombre serif">Aguilar Mendoza y Asociados</span>
+      <span class="sub">Abogados</span>
+    </a>
+    <div class="nav-links">
+      <a href="#areas">Áreas de práctica</a>
+      <a href="#despacho">El despacho</a>
+      <a href="#proceso">Cómo trabajamos</a>
+      <a href="#contacto">Contacto</a>
+      <a class="btn" href="#contacto">Consulta gratuita</a>
+    </div>
+  </div>
+</nav>
+
+<header class="portada">
+  <div class="contenedor">
+    <h1>Asesoría legal cercana, en el oriente del Estado de México</h1>
+    <p>
+      Atendemos asuntos familiares, laborales y civiles en Ciudad Nezahualcóyotl y municipios
+      vecinos. Le explicamos su situación en términos claros, sin tecnicismos innecesarios y con
+      honestidad sobre sus posibilidades reales.
+    </p>
+    <div class="acciones">
+      <a class="btn btn-wa" href="#contacto">Agendar consulta sin costo</a>
+      <a class="btn btn-linea" href="#areas">Ver áreas de práctica</a>
+    </div>
+    <div class="insignias">
+      <div>Primera consulta sin costo</div>
+      <div>Atención en sábado con cita</div>
+      <div>Planes de pago en asuntos familiares</div>
+    </div>
+  </div>
+</header>
+
+<section id="areas">
+  <div class="contenedor">
+    <p class="titulo-seccion">Áreas de práctica</p>
+    <h2>En qué podemos ayudarle</h2>
+    <p class="intro">
+      Si su asunto no aparece en esta lista, escríbanos de todas formas. Si no es nuestra
+      especialidad, le decimos con quién sí acudir.
+    </p>
+    <div class="rejilla">
+      <div class="area">
+        <h3>Derecho familiar</h3>
+        <p>Los asuntos que más afectan la vida diaria de una familia.</p>
+        <ul>
+          <li>Divorcio voluntario e incausado</li>
+          <li>Guarda, custodia y convivencia</li>
+          <li>Pensión alimenticia</li>
+          <li>Reconocimiento de paternidad</li>
+          <li>Juicios sucesorios</li>
+        </ul>
+      </div>
+      <div class="area">
+        <h3>Derecho laboral</h3>
+        <p>Representación de trabajadores ante despidos y adeudos.</p>
+        <ul>
+          <li>Despido injustificado</li>
+          <li>Cálculo de liquidación y finiquito</li>
+          <li>Falta de pago de prestaciones</li>
+          <li>Riesgos de trabajo</li>
+          <li>Conciliación prejudicial</li>
+        </ul>
+      </div>
+      <div class="area">
+        <h3>Derecho civil</h3>
+        <p>Contratos, propiedad y conflictos entre particulares.</p>
+        <ul>
+          <li>Contratos de arrendamiento</li>
+          <li>Desocupación de inmuebles</li>
+          <li>Cobro de pagarés y adeudos</li>
+          <li>Escrituración e inmatriculación</li>
+          <li>Rectificación de actas</li>
+        </ul>
+      </div>
+      <div class="area">
+        <h3>Amparo</h3>
+        <p>Defensa frente a actos de autoridad que afectan sus derechos.</p>
+        <ul>
+          <li>Amparo indirecto</li>
+          <li>Suspensión del acto reclamado</li>
+          <li>Amparo en materia administrativa</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="nosotros" id="despacho">
+  <div class="contenedor">
+    <div class="dos-columnas">
+      <div>
+        <p class="titulo-seccion">El despacho</p>
+        <h2>Un despacho de barrio, con trabajo serio</h2>
+        <p>
+          Abrimos en 2011 en la colonia Benito Juárez y desde entonces atendemos principalmente a
+          familias y trabajadores de Nezahualcóyotl, Chimalhuacán y La Paz. No prometemos
+          resultados imposibles: en la primera consulta le decimos con claridad qué es viable, qué
+          va a costar y cuánto tiempo puede tardar.
+        </p>
+        <p>
+          Cada asunto lo lleva personalmente un abogado con cédula profesional, y usted tiene su
+          número directo. Nada de intermediarios ni de enterarse de su caso hasta el final.
+        </p>
+      </div>
+      <div class="cifras">
+        <div class="cifra"><div class="n">14 años</div><div class="t">atendiendo en la misma dirección</div></div>
+        <div class="cifra"><div class="n">4</div><div class="t">abogados con cédula profesional</div></div>
+        <div class="cifra"><div class="n">48 horas</div><div class="t">para dar respuesta a un caso nuevo</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proceso">
+  <div class="contenedor">
+    <p class="titulo-seccion">Cómo trabajamos</p>
+    <h2>Claridad desde la primera visita</h2>
+    <p class="intro">Así avanza un asunto con nosotros, de principio a fin.</p>
+    <div class="pasos">
+      <div class="paso">
+        <h3>Consulta inicial</h3>
+        <p>Sin costo y sin compromiso. Traiga los documentos que tenga a la mano, aunque estén incompletos.</p>
+      </div>
+      <div class="paso">
+        <h3>Análisis del caso</h3>
+        <p>Revisamos su situación y le entregamos por escrito las opciones legales que existen.</p>
+      </div>
+      <div class="paso">
+        <h3>Presupuesto cerrado</h3>
+        <p>Honorarios y gastos por escrito antes de iniciar. Sin cobros que aparezcan después.</p>
+      </div>
+      <div class="paso">
+        <h3>Seguimiento</h3>
+        <p>Le informamos cada avance por WhatsApp y le avisamos de cada audiencia con anticipación.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contacto" id="contacto">
+  <div class="contenedor">
+    <p class="titulo-seccion">Contacto</p>
+    <h2>Estamos a unas calles de usted</h2>
+    <p class="intro">
+      Llame, escriba por WhatsApp o venga directamente. Si es urgente, indíquelo en su mensaje y
+      le damos prioridad.
+    </p>
+    <div class="dos-columnas">
+      <div class="datos">
+        <div class="dato">
+          <div class="et">Dirección</div>
+          Av. Chimalhuacán 214, local 3<br>
+          Col. Benito Juárez, Cd. Nezahualcóyotl<br>
+          Estado de México, C.P. 57000
+        </div>
+        <div class="dato">
+          <div class="et">Teléfono y WhatsApp</div>
+          <a href="tel:+525500000000">55 0000 0000</a>
+        </div>
+        <div class="dato">
+          <div class="et">Correo</div>
+          <a href="mailto:contacto@ejemplo.mx">contacto@ejemplo.mx</a>
+        </div>
+        <div class="dato">
+          <div class="et">Horario</div>
+          Lunes a viernes de 9:00 a 19:00 h<br>
+          Sábados de 10:00 a 14:00 h, con cita
+        </div>
+        <div>
+          <a class="btn btn-wa" href="#" onclick="alert('En el sitio real este botón abre WhatsApp con un mensaje ya escrito.');return false;">
+            Escribir por WhatsApp
+          </a>
+        </div>
+      </div>
+      <div class="caja-mapa">
+        <iframe
+          class="mapa"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Ubicación del despacho"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=-99.03%2C19.39%2C-98.97%2C19.43&amp;layer=mapnik">
+        </iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="contenedor">
+    <div>Aguilar Mendoza y Asociados &middot; Cd. Nezahualcóyotl, Estado de México</div>
+    <div>Sitio de muestra con fines de demostración</div>
+  </div>
+</footer>
+
+<a class="wa-flotante" href="#contacto" aria-label="Escribir por WhatsApp">
+  <svg viewBox="0 0 24 24" width="29" height="29" fill="currentColor" aria-hidden="true">
+    <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.13-.42-2.15-1.33-.8-.71-1.33-1.59-1.48-1.89-.15-.3-.02-.46.13-.61.15-.15.33-.38.48-.58.15-.2.2-.33.3-.53.1-.2.05-.38-.02-.53-.08-.15-.68-1.63-.93-2.22-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.03 1-1.03 2.45s1.06 2.85 1.21 3.05c.15.2 2.06 3.28 5.02 4.47 2.46.99 2.96.79 3.49.74.53-.05 1.72-.7 1.96-1.38.24-.68.24-1.26.17-1.38-.07-.12-.27-.2-.57-.35z"/>
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.86 9.86 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.13c-1.5 0-2.98-.4-4.27-1.17l-.31-.18-3.18.83.85-3.1-.2-.32a8.24 8.24 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24z"/>
+  </svg>
+</a>
+
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatización documental para despachos jurídicos | Nezahualcóyotl</title>
+<meta name="description" content="Automatizo la captura de documentos, el control de expedientes y la presencia digital de despachos jurídicos y negocios en Nezahualcóyotl y el Oriente del Edomex.">
+<style>
+  :root{
+    --tinta:#151a24;
+    --gris:#5d6675;
+    --gris-claro:#8d95a3;
+    --linea:#e4e7ec;
+    --crema:#faf9f7;
+    --acento:#7a1f2b;
+    --acento-hover:#63161f;
+    --verde:#128c7e;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--tinta);
+    background:#fff;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .contenedor{max-width:1060px;margin:0 auto;padding:0 24px}
+
+  /* ---------- Navegación ---------- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.94);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--linea);
+  }
+  nav .contenedor{display:flex;align-items:center;justify-content:space-between;height:64px;gap:20px}
+  .marca{font-weight:700;font-size:16px;letter-spacing:-.2px;text-decoration:none;color:var(--tinta)}
+  .marca span{color:var(--acento)}
+  .nav-links{display:flex;gap:26px;align-items:center}
+  .nav-links a{color:var(--gris);text-decoration:none;font-size:14px}
+  .nav-links a:hover{color:var(--tinta)}
+  @media(max-width:760px){.nav-links a:not(.btn){display:none}}
+
+  .btn{
+    display:inline-block;
+    background:var(--acento);color:#fff;
+    padding:11px 20px;border-radius:6px;
+    text-decoration:none;font-size:14px;font-weight:600;
+    transition:background .15s;border:none;cursor:pointer;
+  }
+  .btn:hover{background:var(--acento-hover)}
+  .btn-wa{background:var(--verde)}
+  .btn-wa:hover{background:#0e6b60}
+  .btn-linea{background:transparent;color:var(--tinta);border:1px solid var(--linea)}
+  .btn-linea:hover{background:var(--crema)}
+
+  /* ---------- Portada ---------- */
+  .portada{padding:84px 0 72px;border-bottom:1px solid var(--linea)}
+  .etiqueta{
+    display:inline-block;font-size:12px;font-weight:700;
+    text-transform:uppercase;letter-spacing:1px;
+    color:var(--acento);background:#f6ecee;
+    padding:6px 12px;border-radius:20px;margin-bottom:22px;
+  }
+  h1{
+    font-size:clamp(30px,5vw,46px);line-height:1.15;
+    margin:0 0 20px;letter-spacing:-1px;font-weight:700;max-width:19ch;
+  }
+  .entrada{font-size:18px;color:var(--gris);max-width:60ch;margin:0 0 32px}
+  .acciones-portada{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .dato-confianza{margin-top:34px;font-size:13.5px;color:var(--gris-claro)}
+
+  /* ---------- Secciones ---------- */
+  section{padding:74px 0}
+  .titulo-seccion{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--acento);margin:0 0 12px}
+  h2{font-size:clamp(24px,3.4vw,32px);margin:0 0 16px;letter-spacing:-.5px;line-height:1.25}
+  .intro-seccion{color:var(--gris);max-width:62ch;margin:0 0 42px;font-size:16.5px}
+
+  .problema{background:var(--crema)}
+  .lista-problema{list-style:none;padding:0;margin:0;display:grid;gap:14px;max-width:70ch}
+  .lista-problema li{padding-left:30px;position:relative;color:var(--gris)}
+  .lista-problema li::before{
+    content:"";position:absolute;left:8px;top:11px;
+    width:7px;height:7px;border-radius:50%;background:var(--acento);
+  }
+  .lista-problema b{color:var(--tinta)}
+
+  /* ---------- Servicios ---------- */
+  .rejilla{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px}
+  .tarjeta{
+    border:1px solid var(--linea);border-radius:10px;
+    padding:26px;display:flex;flex-direction:column;
+    transition:box-shadow .18s,transform .18s;background:#fff;
+  }
+  .tarjeta:hover{box-shadow:0 6px 22px rgba(21,26,36,.08);transform:translateY(-2px)}
+  .tarjeta h3{margin:0 0 10px;font-size:18px;letter-spacing:-.2px}
+  .tarjeta p{margin:0 0 18px;color:var(--gris);font-size:15px;flex:1}
+  .precio{
+    font-size:14px;font-weight:700;color:var(--acento);
+    padding-top:16px;border-top:1px solid var(--linea);
+  }
+  .precio small{display:block;font-weight:400;color:var(--gris-claro);font-size:12.5px;margin-top:3px}
+
+  /* ---------- Demos ---------- */
+  .demos{background:var(--tinta);color:#fff}
+  .demos .titulo-seccion{color:#d99aa6}
+  .demos .intro-seccion{color:#9aa3b2}
+  .tarjeta-demo{
+    border:1px solid #2b3341;border-radius:10px;padding:26px;
+    background:#1b212c;display:flex;flex-direction:column;
+  }
+  .tarjeta-demo h3{margin:0 0 10px;font-size:18px;color:#fff}
+  .tarjeta-demo p{color:#9aa3b2;font-size:15px;margin:0 0 20px;flex:1}
+  .tarjeta-demo .btn-linea{color:#fff;border-color:#3a4352;align-self:flex-start}
+  .tarjeta-demo .btn-linea:hover{background:#242c38}
+
+  /* ---------- Proceso ---------- */
+  .pasos{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:30px;counter-reset:paso}
+  .paso{counter-increment:paso}
+  .paso::before{
+    content:counter(paso);
+    display:flex;align-items:center;justify-content:center;
+    width:34px;height:34px;border-radius:50%;
+    background:var(--acento);color:#fff;
+    font-weight:700;font-size:15px;margin-bottom:14px;
+  }
+  .paso h3{margin:0 0 7px;font-size:16.5px}
+  .paso p{margin:0;color:var(--gris);font-size:14.5px}
+
+  /* ---------- Cierre ---------- */
+  .cierre{background:var(--crema);border-top:1px solid var(--linea);text-align:center}
+  .cierre h2{max-width:22ch;margin:0 auto 16px}
+  .cierre p{color:var(--gris);max-width:52ch;margin:0 auto 30px;font-size:16.5px}
+
+  footer{padding:34px 0;border-top:1px solid var(--linea);font-size:13.5px;color:var(--gris-claro)}
+  footer .contenedor{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer a{color:var(--gris);text-decoration:none}
+
+  .wa-flotante{
+    position:fixed;bottom:22px;right:22px;z-index:60;
+    background:var(--verde);color:#fff;
+    width:56px;height:56px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 16px rgba(0,0,0,.22);
+    text-decoration:none;font-size:26px;
+  }
+  .wa-flotante:hover{background:#0e6b60}
+</style>
+</head>
+<body>
+
+<!--
+  ============================================================
+  CONFIGURACIÓN: cambia solo estos datos.
+  Busca cada texto entre llaves dobles y reemplázalo.
+  ============================================================
+-->
+
+<nav>
+  <div class="contenedor">
+    <a href="#" class="marca">Elías<span>.</span></a>
+    <div class="nav-links">
+      <a href="#servicios">Servicios</a>
+      <a href="#demos">Trabajos</a>
+      <a href="#proceso">Cómo trabajo</a>
+      <a class="btn" href="https://wa.me/525527631355?text=Hola,%20vi%20tu%20sitio%20y%20quiero%20información">Cotizar</a>
+    </div>
+  </div>
+</nav>
+
+<header class="portada">
+  <div class="contenedor">
+    <span class="etiqueta">Nezahualcóyotl y Oriente del Edomex</span>
+    <h1>Su despacho deja de reescribir contratos a mano.</h1>
+    <p class="entrada">
+      Automatizo la captura de documentos, el control de expedientes y el seguimiento de plazos
+      para despachos jurídicos y negocios locales. Soy estudiante de Derecho: entiendo qué dice un
+      contrato y por qué importa cada cláusula, no solo cómo programarlo.
+    </p>
+    <div class="acciones-portada">
+      <a class="btn btn-wa" href="https://wa.me/525527631355?text=Hola,%20quiero%20una%20demostración%20gratuita">
+        Pedir demostración gratuita
+      </a>
+      <a class="btn btn-linea" href="#demos">Ver trabajos</a>
+    </div>
+    <p class="dato-confianza">
+      Primera reunión y diagnóstico sin costo &middot; Trabajo con anticipo del 50% &middot; Entrega en días, no semanas
+    </p>
+  </div>
+</header>
+
+<section class="problema">
+  <div class="contenedor">
+    <p class="titulo-seccion">El problema</p>
+    <h2>Horas de trabajo que nadie le paga</h2>
+    <p class="intro-seccion">
+      En la mayoría de los despachos y negocios pequeños de la zona, el trabajo administrativo
+      se hace igual que hace veinte años. Esto es lo que veo una y otra vez:
+    </p>
+    <ul class="lista-problema">
+      <li><b>Contratos que se copian y pegan.</b> Cada arrendamiento, pagaré o convenio se rehace desde un archivo viejo de Word, y cada vez se cuela un dato del cliente anterior.</li>
+      <li><b>Expedientes en cuadernos y hojas sueltas.</b> Nadie sabe con certeza cuántos asuntos activos hay ni en qué etapa va cada uno.</li>
+      <li><b>Plazos que se vencen.</b> El seguimiento de términos depende de que alguien se acuerde.</li>
+      <li><b>Cantidades escritas con letra a mano.</b> Un error de dedo en un pagaré puede costar la ejecución del título.</li>
+      <li><b>Cero presencia en internet.</b> El cliente que busca "abogado en Neza" en Google encuentra a la competencia.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="servicios">
+  <div class="contenedor">
+    <p class="titulo-seccion">Servicios</p>
+    <h2>Lo que hago y cuánto cuesta</h2>
+    <p class="intro-seccion">
+      Precios claros desde el principio. Si su caso necesita algo distinto, se cotiza sin compromiso
+      después de una llamada de quince minutos.
+    </p>
+
+    <div class="rejilla">
+      <div class="tarjeta">
+        <h3>Generador de documentos</h3>
+        <p>
+          Sus formatos convertidos en un generador: se capturan los datos una sola vez y sale el
+          documento armado, con las cantidades escritas en letra automáticamente, listo para
+          descargar en Word o imprimir. Funciona sin internet.
+        </p>
+        <div class="precio">Desde $2,500<small>Incluye hasta 3 tipos de documento</small></div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>Control de expedientes</h3>
+        <p>
+          Un sistema en hoja de cálculo con el estado de cada asunto, las partes, la etapa procesal
+          y alertas automáticas de los plazos que vencen esta semana. Se abre desde la computadora
+          o el celular.
+        </p>
+        <div class="precio">Desde $1,800<small>Incluye capacitación de una hora</small></div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>Sitio web profesional</h3>
+        <p>
+          Página con sus áreas de práctica, ubicación, mapa y botón directo a WhatsApp. Rápida,
+          se ve bien en celular y aparece cuando alguien busca su especialidad en la zona.
+        </p>
+        <div class="precio">$3,500 a $6,000<small>Dominio y hospedaje anual aparte</small></div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>Digitalización de archivo</h3>
+        <p>
+          Su archivo físico convertido en carpetas digitales ordenadas y buscables, con respaldo en
+          la nube. Deja de perder media hora buscando un expediente de hace tres años.
+        </p>
+        <div class="precio">$1,200 por cada 500 hojas<small>Incluye índice de búsqueda</small></div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>Formato de tesis y trabajos</h3>
+        <p>
+          Formato editorial completo: índices automáticos, numeración, citas y bibliografía en APA
+          o el formato que exija su institución. Entrega en 48 horas.
+        </p>
+        <div class="precio">$600 a $1,500<small>Según extensión del documento</small></div>
+      </div>
+
+      <div class="tarjeta">
+        <h3>Apoyo documental por proyecto</h3>
+        <p>
+          Captura, transcripción de audios de audiencia, elaboración de escritos base a partir de
+          sus formatos y armado de anexos. Trabajo bajo la supervisión y firma del abogado titular.
+        </p>
+        <div class="precio">$120 por hora<small>Mínimo 5 horas por proyecto</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="demos" id="demos">
+  <div class="contenedor">
+    <p class="titulo-seccion">Trabajos</p>
+    <h2>Pruébelo ahora mismo</h2>
+    <p class="intro-seccion">
+      No hay nada que instalar ni registrar. Ábralos, escriba datos de prueba y vea el resultado.
+    </p>
+    <div class="rejilla">
+      <div class="tarjeta-demo">
+        <h3>Generador de documentos jurídicos</h3>
+        <p>
+          Cuatro documentos funcionando: contrato de arrendamiento, pagaré, carta poder y recibo de
+          renta. Capture una renta de $4,800 y observe cómo la escribe en letra sola.
+        </p>
+        <a class="btn btn-linea" href="../demos/generador-documentos/index.html">Abrir el generador</a>
+      </div>
+      <div class="tarjeta-demo">
+        <h3>Sitio para despacho jurídico</h3>
+        <p>
+          Ejemplo de página para un despacho de la zona: áreas de práctica, ubicación, horarios y
+          contacto directo por WhatsApp. Así quedaría la suya.
+        </p>
+        <a class="btn btn-linea" href="../demos/sitio-despacho/index.html">Ver el ejemplo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="proceso">
+  <div class="contenedor">
+    <p class="titulo-seccion">Cómo trabajo</p>
+    <h2>Cuatro pasos, sin sorpresas</h2>
+    <p class="intro-seccion">
+      Usted sabe desde el primer día qué va a recibir, cuándo y cuánto va a pagar.
+    </p>
+    <div class="pasos">
+      <div class="paso">
+        <h3>Diagnóstico gratuito</h3>
+        <p>Veinte minutos, en su oficina o por teléfono. Me muestra cómo trabaja hoy y qué le quita más tiempo.</p>
+      </div>
+      <div class="paso">
+        <h3>Propuesta por escrito</h3>
+        <p>Alcance, precio fijo y fecha de entrega en una sola hoja. Si no le parece, no hay costo alguno.</p>
+      </div>
+      <div class="paso">
+        <h3>Construcción</h3>
+        <p>Anticipo del 50%. Le muestro avances para que corrija antes de que esté terminado.</p>
+      </div>
+      <div class="paso">
+        <h3>Entrega y capacitación</h3>
+        <p>Le enseño a usarlo, paga el resto y tiene 30 días de ajustes incluidos sin costo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cierre">
+  <div class="contenedor">
+    <h2>Empecemos por el diagnóstico gratuito</h2>
+    <p>
+      Escríbame por WhatsApp qué parte de su trabajo administrativo le consume más tiempo.
+      Le digo con honestidad si puedo ayudarle y cuánto costaría.
+    </p>
+    <a class="btn btn-wa" href="https://wa.me/525527631355?text=Hola,%20quiero%20el%20diagnóstico%20gratuito">
+      Escribir por WhatsApp
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="contenedor">
+    <div>Elías &middot; Nezahualcóyotl, Estado de México</div>
+    <div>
+      <a href="https://wa.me/525527631355">WhatsApp</a> &middot;
+      <a href="mailto:eliasac041129@gmail.com">eliasac041129@gmail.com</a>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-flotante" href="https://wa.me/525527631355?text=Hola,%20vi%20tu%20sitio" aria-label="Escribir por WhatsApp">
+  <svg viewBox="0 0 24 24" width="29" height="29" fill="currentColor" aria-hidden="true">
+    <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.65.07-.3-.15-1.13-.42-2.15-1.33-.8-.71-1.33-1.59-1.48-1.89-.15-.3-.02-.46.13-.61.15-.15.33-.38.48-.58.15-.2.2-.33.3-.53.1-.2.05-.38-.02-.53-.08-.15-.68-1.63-.93-2.22-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.03 1-1.03 2.45s1.06 2.85 1.21 3.05c.15.2 2.06 3.28 5.02 4.47 2.46.99 2.96.79 3.49.74.53-.05 1.72-.7 1.96-1.38.24-.68.24-1.26.17-1.38-.07-.12-.27-.2-.57-.35z"/>
+    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2 22l5.25-1.38a9.86 9.86 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.13c-1.5 0-2.98-.4-4.27-1.17l-.31-.18-3.18.83.85-3.1-.2-.32a8.24 8.24 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24z"/>
+  </svg>
+</a>
+
+</body>
+</html>

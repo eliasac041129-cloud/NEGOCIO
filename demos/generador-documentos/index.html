@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de Documentos Jurídicos</title>
+<style>
+  :root{
+    --tinta:#1a1f2b;
+    --gris:#6b7280;
+    --linea:#e2e5ea;
+    --fondo:#f4f5f7;
+    --acento:#7a1f2b;
+    --acento-claro:#f3e9ea;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--fondo);
+    color:var(--tinta);
+  }
+  header{
+    background:var(--tinta);
+    color:#fff;
+    padding:14px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  header h1{font-size:16px;margin:0;font-weight:600;letter-spacing:.2px}
+  header p{margin:2px 0 0;font-size:12px;color:#a8aebb}
+  .acciones{display:flex;gap:8px;flex-wrap:wrap}
+  button{
+    font:inherit;font-size:13px;
+    padding:9px 14px;
+    border-radius:6px;
+    border:1px solid transparent;
+    cursor:pointer;
+    background:#fff;color:var(--tinta);
+    transition:opacity .15s;
+  }
+  button:hover{opacity:.85}
+  button.principal{background:var(--acento);color:#fff}
+  button.fantasma{background:transparent;color:#cfd4dd;border-color:#3a4152}
+
+  .app{display:grid;grid-template-columns:390px 1fr;min-height:calc(100vh - 62px)}
+  @media (max-width:900px){.app{grid-template-columns:1fr}}
+
+  .panel{
+    background:#fff;
+    border-right:1px solid var(--linea);
+    padding:20px;
+    overflow-y:auto;
+    max-height:calc(100vh - 62px);
+  }
+  @media (max-width:900px){.panel{max-height:none}}
+
+  .grupo{margin-bottom:16px}
+  label{display:block;font-size:12px;font-weight:600;color:var(--gris);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+  input,select,textarea{
+    width:100%;font:inherit;font-size:14px;
+    padding:9px 11px;
+    border:1px solid var(--linea);
+    border-radius:6px;
+    background:#fff;color:var(--tinta);
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--acento-claro);border-color:var(--acento)}
+  textarea{min-height:66px;resize:vertical}
+  .ayuda{font-size:11px;color:var(--gris);margin-top:4px;text-transform:none;letter-spacing:0;font-weight:400}
+
+  .selector{margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--linea)}
+  .seccion{
+    font-size:11px;font-weight:700;color:var(--acento);
+    text-transform:uppercase;letter-spacing:.8px;
+    margin:24px 0 12px;padding-bottom:6px;
+    border-bottom:1px solid var(--linea);
+  }
+  .seccion:first-of-type{margin-top:0}
+
+  .visor{padding:28px;overflow-y:auto;max-height:calc(100vh - 62px)}
+  @media (max-width:900px){.visor{max-height:none;padding:16px}}
+
+  #doc{
+    background:#fff;
+    max-width:800px;
+    margin:0 auto;
+    padding:70px 80px;
+    box-shadow:0 1px 3px rgba(0,0,0,.10),0 8px 24px rgba(0,0,0,.06);
+    font-family:"Times New Roman",Georgia,serif;
+    font-size:15px;
+    line-height:1.75;
+    color:#000;
+    text-align:justify;
+  }
+  @media (max-width:900px){#doc{padding:34px 26px}}
+
+  #doc h2{text-align:center;font-size:16px;text-transform:uppercase;letter-spacing:.6px;margin:0 0 26px;line-height:1.5}
+  #doc h3{font-size:15px;margin:22px 0 8px;text-transform:uppercase;letter-spacing:.4px}
+  #doc p{margin:0 0 13px}
+  #doc .clausula{margin:0 0 13px}
+  #doc .centro{text-align:center}
+  #doc .der{text-align:right}
+  #doc b{font-weight:bold}
+  #doc .firmas{margin-top:56px;width:100%;border-collapse:collapse}
+  #doc .firmas td{width:50%;text-align:center;vertical-align:top;padding:0 14px;font-size:14px}
+  #doc .linea-firma{border-top:1px solid #000;margin-bottom:6px;padding-top:0}
+  #doc .nota-pie{margin-top:40px;font-size:11px;color:#555;font-style:italic;border-top:1px solid #ccc;padding-top:10px;text-align:left}
+
+  .aviso{
+    background:var(--acento-claro);
+    border-left:3px solid var(--acento);
+    padding:11px 13px;
+    font-size:12px;
+    line-height:1.55;
+    color:#5a2229;
+    border-radius:0 4px 4px 0;
+    margin-bottom:20px;
+  }
+
+  @media print{
+    header,.panel,.visor{all:unset}
+    body{background:#fff}
+    .app{display:block}
+    header,.panel{display:none !important}
+    .visor{padding:0;max-height:none;overflow:visible}
+    #doc{box-shadow:none;max-width:none;margin:0;padding:0;font-size:12pt}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Generador de Documentos Jurídicos</h1>
+    <p>Captura una vez. Documento formateado, listo para firma.</p>
+  </div>
+  <div class="acciones">
+    <button class="fantasma" onclick="limpiar()">Limpiar</button>
+    <button onclick="window.print()">Imprimir / PDF</button>
+    <button class="principal" onclick="descargarWord()">Descargar en Word</button>
+  </div>
+</header>
+
+<div class="app">
+  <div class="panel">
+    <div class="aviso">
+      <b>Aviso.</b> Esta herramienta agiliza la captura y el formato. El contenido debe ser
+      revisado y adaptado a cada caso por un abogado con cédula profesional antes de firmarse.
+    </div>
+
+    <div class="selector">
+      <label for="plantilla">Tipo de documento</label>
+      <select id="plantilla" onchange="cambiarPlantilla(this.value)"></select>
+    </div>
+
+    <form id="formulario" autocomplete="off"></form>
+  </div>
+
+  <div class="visor">
+    <div id="doc"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   UTILIDADES
+   ============================================================ */
+
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio',
+               'agosto','septiembre','octubre','noviembre','diciembre'];
+
+function fechaLarga(iso){
+  if(!iso) return '____ de __________ de ______';
+  const [a,m,d] = iso.split('-').map(Number);
+  if(!a || !m || !d) return '____ de __________ de ______';
+  return `${d} de ${MESES[m-1]} de ${a}`;
+}
+
+function pesos(n){
+  const v = Number(n);
+  if(!isFinite(v) || n === '' || n === null) return '$________';
+  return new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN'}).format(v);
+}
+
+const UNIDADES = ['','UNO','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ',
+  'ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISÉIS','DIECISIETE','DIECIOCHO','DIECINUEVE',
+  'VEINTE','VEINTIUNO','VEINTIDÓS','VEINTITRÉS','VEINTICUATRO','VEINTICINCO','VEINTISÉIS',
+  'VEINTISIETE','VEINTIOCHO','VEINTINUEVE'];
+const DECENAS  = ['','','VEINTE','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'];
+const CENTENAS = ['','CIENTO','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS',
+  'SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'];
+
+function dosDigitos(n){
+  if(n < 30) return UNIDADES[n];
+  const d = Math.floor(n/10), u = n%10;
+  return u === 0 ? DECENAS[d] : DECENAS[d] + ' Y ' + UNIDADES[u];
+}
+
+function tresDigitos(n){
+  if(n === 0) return '';
+  if(n === 100) return 'CIEN';
+  const c = Math.floor(n/100), r = n%100;
+  let t = c > 0 ? CENTENAS[c] : '';
+  if(r > 0) t += (t ? ' ' : '') + dosDigitos(r);
+  return t;
+}
+
+function apocope(t){
+  // "VEINTIUNO MIL" -> "VEINTIÚN MIL";  "UNO MIL" -> "MIL"
+  return t.replace(/VEINTIUNO$/,'VEINTIÚN').replace(/\bUNO$/,'UN');
+}
+
+function enteroALetras(n){
+  if(n === 0) return 'CERO';
+  let partes = [];
+  const millones = Math.floor(n/1000000);
+  const miles    = Math.floor((n%1000000)/1000);
+  const resto    = n%1000;
+
+  if(millones > 0){
+    partes.push(millones === 1 ? 'UN MILLÓN' : apocope(tresDigitos(millones)) + ' MILLONES');
+  }
+  if(miles > 0){
+    partes.push(miles === 1 ? 'MIL' : apocope(tresDigitos(miles)) + ' MIL');
+  }
+  if(resto > 0) partes.push(tresDigitos(resto));
+  return partes.join(' ');
+}
+
+function pesosALetras(n){
+  const v = Number(n);
+  if(!isFinite(v) || n === '' || n === null) return '(______________________________ PESOS 00/100 M.N.)';
+  const entero = Math.floor(Math.abs(v));
+  const cent = Math.round((Math.abs(v) - entero) * 100);
+  const letras = apocope(enteroALetras(entero));
+  const moneda = entero === 1 ? 'PESO' : 'PESOS';
+  // "UN MILLÓN DE PESOS" cuando la cantidad es exacta en millones.
+  const conector = (entero >= 1000000 && entero % 1000000 === 0) ? 'DE ' : '';
+  return `(${letras} ${conector}${moneda} ${String(cent).padStart(2,'0')}/100 M.N.)`;
+}
+
+function txt(v, ancho = 30){
+  const s = (v ?? '').toString().trim();
+  return s ? s : '_'.repeat(ancho);
+}
+
+function mayus(v, ancho = 30){
+  const s = (v ?? '').toString().trim();
+  return s ? s.toUpperCase() : '_'.repeat(ancho);
+}
+
+function ordinal(n){
+  const o = ['','PRIMERA','SEGUNDA','TERCERA','CUARTA','QUINTA','SEXTA','SÉPTIMA','OCTAVA',
+    'NOVENA','DÉCIMA','DÉCIMA PRIMERA','DÉCIMA SEGUNDA','DÉCIMA TERCERA','DÉCIMA CUARTA',
+    'DÉCIMA QUINTA','DÉCIMA SEXTA'];
+  return o[n] || n + 'ª';
+}
+
+/* ============================================================
+   PLANTILLAS
+   ============================================================ */
+
+const HOY = new Date().toISOString().slice(0,10);
+const CIUDAD_DEF = 'Ciudad Nezahualcóyotl, Estado de México';
+
+const PLANTILLAS = {
+
+/* ---------- 1. CONTRATO DE ARRENDAMIENTO ---------- */
+arrendamiento: {
+  nombre: 'Contrato de arrendamiento',
+  campos: [
+    {s:'Datos generales'},
+    {id:'ciudad', et:'Lugar de celebración', v:CIUDAD_DEF},
+    {id:'fecha', et:'Fecha de firma', tipo:'date', v:HOY},
+
+    {s:'Arrendador (quien renta)'},
+    {id:'arrendador', et:'Nombre completo'},
+    {id:'arrendadorDom', et:'Domicilio para oír y recibir notificaciones', tipo:'textarea'},
+
+    {s:'Arrendatario (inquilino)'},
+    {id:'arrendatario', et:'Nombre completo'},
+    {id:'arrendatarioDom', et:'Domicilio para oír y recibir notificaciones', tipo:'textarea'},
+
+    {s:'Inmueble'},
+    {id:'tipo', et:'Tipo de inmueble', tipo:'select',
+      opciones:['casa habitación','departamento','cuarto','local comercial','bodega','terreno'], v:'casa habitación'},
+    {id:'domicilio', et:'Ubicación exacta del inmueble', tipo:'textarea',
+      ayuda:'Calle, número, colonia, municipio y código postal.'},
+    {id:'destino', et:'Destino o uso convenido', v:'casa habitación'},
+
+    {s:'Vigencia y renta'},
+    {id:'inicio', et:'Inicio del arrendamiento', tipo:'date', v:HOY},
+    {id:'meses', et:'Duración en meses', tipo:'number', v:'12'},
+    {id:'renta', et:'Renta mensual (pesos)', tipo:'number'},
+    {id:'dia', et:'Día de pago de cada mes', tipo:'number', v:'5'},
+    {id:'formaPago', et:'Forma de pago', tipo:'select',
+      opciones:['en efectivo contra entrega de recibo','mediante transferencia electrónica','en efectivo o transferencia'],
+      v:'en efectivo contra entrega de recibo'},
+    {id:'deposito', et:'Depósito en garantía (pesos)', tipo:'number',
+      ayuda:'Normalmente equivale a uno o dos meses de renta.'},
+    {id:'servicios', et:'Servicios a cargo del arrendatario',
+      v:'agua, energía eléctrica, gas, internet y telefonía'},
+
+    {s:'Obligado solidario (opcional)'},
+    {id:'fiador', et:'Nombre del obligado solidario', ayuda:'Deja en blanco si no habrá fiador.'},
+    {id:'fiadorDom', et:'Domicilio del obligado solidario'}
+  ],
+  generar(d){
+    const R = Number(d.renta) || 0;
+    let n = 0;
+    const c = () => ordinal(++n);
+    const fiador = (d.fiador||'').trim();
+
+    return `
+      <h2>Contrato de Arrendamiento</h2>
+
+      <p>En ${txt(d.ciudad,25)}, a ${fechaLarga(d.fecha)}, comparecen por una parte
+      <b>${mayus(d.arrendador)}</b>, a quien en lo sucesivo se le denominará <b>&ldquo;EL ARRENDADOR&rdquo;</b>,
+      y por la otra parte <b>${mayus(d.arrendatario)}</b>, a quien en lo sucesivo se le denominará
+      <b>&ldquo;EL ARRENDATARIO&rdquo;</b>${fiador ? `, y con la comparecencia de <b>${mayus(fiador)}</b>, en su calidad de <b>&ldquo;OBLIGADO SOLIDARIO&rdquo;</b>` : ''};
+      quienes manifiestan su voluntad de celebrar el presente contrato de arrendamiento, al tenor de las
+      siguientes declaraciones y cláusulas.</p>
+
+      <h3>Declaraciones</h3>
+
+      <p><b>I.</b> Declara <b>EL ARRENDADOR</b> ser una persona física con plena capacidad jurídica para
+      contratar y obligarse; que señala como domicilio para oír y recibir notificaciones el ubicado en
+      ${txt(d.arrendadorDom,45)}; y que se encuentra legítimamente facultado para otorgar en arrendamiento
+      el inmueble objeto de este contrato, encontrándose éste libre de gravamen y al corriente en el pago
+      de sus contribuciones.</p>
+
+      <p><b>II.</b> Declara <b>EL ARRENDATARIO</b> ser una persona física con plena capacidad jurídica para
+      contratar y obligarse; que señala como domicilio para oír y recibir notificaciones el ubicado en
+      ${txt(d.arrendatarioDom,45)}; que conoce el estado físico del inmueble, el cual recibe a su entera
+      satisfacción; y que cuenta con los recursos suficientes para cumplir las obligaciones que aquí asume.</p>
+
+      ${fiador ? `<p><b>III.</b> Declara el <b>OBLIGADO SOLIDARIO</b> ser persona física con capacidad
+      jurídica para contratar y obligarse, con domicilio en ${txt(d.fiadorDom,40)}, y comparecer a la
+      firma de este contrato con el fin de garantizar solidariamente el cumplimiento de todas y cada una
+      de las obligaciones de <b>EL ARRENDATARIO</b>.</p>` : ''}
+
+      <p><b>${fiador ? 'IV' : 'III'}.</b> Declaran ambas partes que no existe error, dolo, mala fe, violencia
+      ni lesión alguna que pudiera viciar su consentimiento, por lo que se someten a las siguientes:</p>
+
+      <h3>Cláusulas</h3>
+
+      <p class="clausula"><b>${c()}. OBJETO.</b> <b>EL ARRENDADOR</b> otorga en arrendamiento a
+      <b>EL ARRENDATARIO</b> el ${txt(d.tipo,12)} ubicado en ${txt(d.domicilio,45)}, con todas sus
+      instalaciones, accesorios y servicios, mismo que <b>EL ARRENDATARIO</b> recibe en buen estado de
+      conservación y funcionamiento.</p>
+
+      <p class="clausula"><b>${c()}. DESTINO.</b> El inmueble arrendado será destinado única y exclusivamente
+      para ${txt(d.destino,18)}. <b>EL ARRENDATARIO</b> no podrá variar dicho destino sin el consentimiento
+      previo y por escrito de <b>EL ARRENDADOR</b>, siendo su incumplimiento causa de rescisión.</p>
+
+      <p class="clausula"><b>${c()}. VIGENCIA.</b> Las partes convienen en que la vigencia del presente
+      contrato será de ${txt(d.meses,3)} (${d.meses ? enteroALetras(Number(d.meses)).toLowerCase() : '________'})
+      meses forzosos para ambas partes, contados a partir del ${fechaLarga(d.inicio)}. Concluido dicho plazo,
+      el contrato podrá prorrogarse únicamente mediante convenio escrito firmado por ambas partes.</p>
+
+      <p class="clausula"><b>${c()}. RENTA.</b> <b>EL ARRENDATARIO</b> se obliga a pagar a
+      <b>EL ARRENDADOR</b> por concepto de renta mensual la cantidad de <b>${pesos(d.renta)}</b>
+      ${pesosALetras(d.renta)}, cantidad que no incluye los servicios señalados en la cláusula
+      correspondiente.</p>
+
+      <p class="clausula"><b>${c()}. FORMA Y LUGAR DE PAGO.</b> La renta será cubierta por mensualidades
+      adelantadas, a más tardar el día ${txt(d.dia,2)} de cada mes, ${txt(d.formaPago,20)}. El pago se
+      realizará en el domicilio de <b>EL ARRENDADOR</b> o en el lugar que éste designe por escrito. La falta
+      de pago oportuno de una sola mensualidad faculta a <b>EL ARRENDADOR</b> para exigir el cumplimiento
+      forzoso o la rescisión del contrato, con el pago de los daños y perjuicios correspondientes.</p>
+
+      <p class="clausula"><b>${c()}. DEPÓSITO EN GARANTÍA.</b> A la firma del presente contrato,
+      <b>EL ARRENDATARIO</b> entrega a <b>EL ARRENDADOR</b> la cantidad de <b>${pesos(d.deposito)}</b>
+      ${pesosALetras(d.deposito)} por concepto de depósito en garantía, la cual será devuelta dentro de los
+      quince días naturales siguientes a la desocupación y entrega del inmueble, previa deducción del importe
+      de los daños que en su caso presente el inmueble y de los adeudos por servicios. Las partes convienen
+      expresamente que dicho depósito <b>no podrá aplicarse al pago de rentas</b>.</p>
+
+      <p class="clausula"><b>${c()}. SERVICIOS.</b> Serán a cargo exclusivo de <b>EL ARRENDATARIO</b> el pago
+      puntual de los siguientes servicios: ${txt(d.servicios,35)}. <b>EL ARRENDATARIO</b> se obliga a exhibir
+      los comprobantes de pago cuando <b>EL ARRENDADOR</b> se lo solicite, y a entregar el inmueble al
+      término del contrato sin adeudo alguno por estos conceptos.</p>
+
+      <p class="clausula"><b>${c()}. CONSERVACIÓN Y REPARACIONES.</b> <b>EL ARRENDATARIO</b> se obliga a
+      conservar el inmueble en el mismo estado en que lo recibió, siendo a su cargo las reparaciones que se
+      originen por el uso normal o por su culpa o negligencia. Las reparaciones mayores derivadas de vicios
+      ocultos o de la estructura del inmueble serán a cargo de <b>EL ARRENDADOR</b>.</p>
+
+      <p class="clausula"><b>${c()}. MEJORAS.</b> <b>EL ARRENDATARIO</b> no podrá realizar modificaciones,
+      adaptaciones ni mejoras al inmueble sin autorización previa y por escrito de <b>EL ARRENDADOR</b>. Las
+      mejoras que se autoricen quedarán en beneficio del inmueble sin derecho a reembolso ni compensación
+      alguna, salvo pacto escrito en contrario.</p>
+
+      <p class="clausula"><b>${c()}. PROHIBICIÓN DE SUBARRENDAR.</b> Queda expresamente prohibido a
+      <b>EL ARRENDATARIO</b> subarrendar, ceder, traspasar o gravar total o parcialmente los derechos
+      derivados de este contrato, así como permitir el uso del inmueble a terceros, sin consentimiento
+      previo y por escrito de <b>EL ARRENDADOR</b>.</p>
+
+      <p class="clausula"><b>${c()}. RESCISIÓN.</b> Será causa de rescisión, sin necesidad de declaración
+      judicial previa y sin responsabilidad para <b>EL ARRENDADOR</b>: a) la falta de pago oportuno de una o
+      más mensualidades de renta; b) el uso del inmueble para un destino distinto al convenido; c) el
+      subarrendamiento o cesión no autorizados; d) los daños causados al inmueble por culpa o negligencia de
+      <b>EL ARRENDATARIO</b>; e) el uso del inmueble para actividades ilícitas; y f) el incumplimiento de
+      cualquiera de las obligaciones aquí pactadas.</p>
+
+      <p class="clausula"><b>${c()}. DEVOLUCIÓN DEL INMUEBLE.</b> Al término de la vigencia o en caso de
+      rescisión, <b>EL ARRENDATARIO</b> se obliga a devolver el inmueble desocupado, en buen estado y con
+      todas sus llaves y accesorios. En caso de no hacerlo, se obliga a pagar por concepto de pena
+      convencional el importe equivalente al doble de la renta diaria por cada día de retraso en la entrega,
+      sin que ello implique prórroga del contrato.</p>
+
+      ${fiador ? `<p class="clausula"><b>${c()}. OBLIGACIÓN SOLIDARIA.</b> <b>${mayus(fiador)}</b> se
+      constituye como obligado solidario de <b>EL ARRENDATARIO</b>, respondiendo del pago de rentas,
+      servicios, daños y de cualquier otra obligación derivada del presente contrato, renunciando
+      expresamente a los beneficios de orden y excusión.</p>` : ''}
+
+      <p class="clausula"><b>${c()}. JURISDICCIÓN.</b> Para la interpretación y cumplimiento del presente
+      contrato, las partes se someten expresamente a las disposiciones del Código Civil vigente en el
+      Estado de México y a la jurisdicción de los tribunales competentes de ${txt(d.ciudad,25)},
+      renunciando a cualquier otro fuero que por razón de sus domicilios presentes o futuros pudiera
+      corresponderles.</p>
+
+      <p style="margin-top:26px">Leído el presente contrato y enteradas las partes de su contenido, alcance
+      y fuerza legal, lo firman de conformidad en ${txt(d.ciudad,25)}, el ${fechaLarga(d.fecha)}, por
+      duplicado, quedando un ejemplar en poder de cada parte.</p>
+
+      <table class="firmas">
+        <tr>
+          <td>
+            <div class="linea-firma"></div>
+            <b>${mayus(d.arrendador)}</b><br>EL ARRENDADOR
+          </td>
+          <td>
+            <div class="linea-firma"></div>
+            <b>${mayus(d.arrendatario)}</b><br>EL ARRENDATARIO
+          </td>
+        </tr>
+        ${fiador ? `<tr><td colspan="2" style="padding-top:52px">
+            <div class="linea-firma" style="width:60%;margin:0 auto 6px"></div>
+            <b>${mayus(fiador)}</b><br>OBLIGADO SOLIDARIO
+          </td></tr>` : ''}
+      </table>
+
+      <p class="nota-pie">Documento generado con formato automatizado. Debe ser revisado y adaptado al caso
+      concreto por un abogado con cédula profesional antes de su firma.</p>
+    `;
+  }
+},
+
+/* ---------- 2. PAGARÉ ---------- */
+pagare: {
+  nombre: 'Pagaré',
+  campos: [
+    {s:'Datos del título'},
+    {id:'ciudad', et:'Lugar de suscripción', v:CIUDAD_DEF},
+    {id:'fecha', et:'Fecha de suscripción', tipo:'date', v:HOY},
+    {id:'folio', et:'Número de pagaré', v:'1 de 1'},
+
+    {s:'Partes'},
+    {id:'deudor', et:'Nombre del suscriptor (deudor)'},
+    {id:'deudorDom', et:'Domicilio del suscriptor', tipo:'textarea'},
+    {id:'beneficiario', et:'Nombre del beneficiario (acreedor)'},
+
+    {s:'Obligación'},
+    {id:'monto', et:'Cantidad a pagar (pesos)', tipo:'number'},
+    {id:'vencimiento', et:'Fecha de vencimiento', tipo:'date'},
+    {id:'lugarPago', et:'Lugar de pago', v:CIUDAD_DEF},
+    {id:'interes', et:'Interés moratorio mensual (%)', tipo:'number', v:'5',
+      ayuda:'Se aplica solo en caso de incumplimiento.'},
+    {id:'aval', et:'Nombre del aval (opcional)'}
+  ],
+  generar(d){
+    const aval = (d.aval||'').trim();
+    return `
+      <h2>Pagaré</h2>
+
+      <table style="width:100%;margin-bottom:26px;font-size:14px">
+        <tr>
+          <td><b>Pagaré No.</b> ${txt(d.folio,8)}</td>
+          <td class="der"><b>Bueno por</b> ${pesos(d.monto)}</td>
+        </tr>
+        <tr>
+          <td>${txt(d.ciudad,25)}</td>
+          <td class="der">${fechaLarga(d.fecha)}</td>
+        </tr>
+      </table>
+
+      <p>Debo y pagaré incondicionalmente a la orden de <b>${mayus(d.beneficiario)}</b>, en
+      ${txt(d.lugarPago,25)}, el día <b>${fechaLarga(d.vencimiento)}</b>, la cantidad de
+      <b>${pesos(d.monto)}</b> ${pesosALetras(d.monto)}, valor recibido a mi entera satisfacción.</p>
+
+      <p>Este pagaré causará intereses moratorios a razón del <b>${txt(d.interes,2)}% mensual</b> desde la
+      fecha de vencimiento hasta el día de su total liquidación, sin que ello implique prórroga alguna del
+      plazo aquí pactado.</p>
+
+      <p>En caso de no ser pagado a su vencimiento, el suscriptor acepta expresamente que el presente título
+      de crédito trae aparejada ejecución en términos de la Ley General de Títulos y Operaciones de Crédito,
+      quedando a cargo del suscriptor los gastos y costas que se generen por su cobro.</p>
+
+      <p>El suscriptor renuncia expresamente al fuero de su domicilio presente o futuro y se somete a la
+      jurisdicción de los tribunales competentes de ${txt(d.lugarPago,25)}.</p>
+
+      <table class="firmas">
+        <tr>
+          <td colspan="2">
+            <div class="linea-firma" style="width:70%;margin:0 auto 6px"></div>
+            <b>${mayus(d.deudor)}</b><br>
+            Suscriptor<br>
+            <span style="font-size:12.5px">${txt(d.deudorDom,32)}</span>
+          </td>
+        </tr>
+        ${aval ? `<tr><td colspan="2" style="padding-top:52px">
+          <div class="linea-firma" style="width:70%;margin:0 auto 6px"></div>
+          <b>${mayus(aval)}</b><br>Por aval
+        </td></tr>` : ''}
+      </table>
+
+      <p class="nota-pie">Documento generado con formato automatizado. Debe ser revisado y adaptado al caso
+      concreto por un abogado con cédula profesional antes de su firma.</p>
+    `;
+  }
+},
+
+/* ---------- 3. CARTA PODER SIMPLE ---------- */
+cartaPoder: {
+  nombre: 'Carta poder simple',
+  campos: [
+    {s:'Datos generales'},
+    {id:'ciudad', et:'Lugar', v:CIUDAD_DEF},
+    {id:'fecha', et:'Fecha', tipo:'date', v:HOY},
+    {id:'dirigida', et:'Dirigida a', v:'A quien corresponda',
+      ayuda:'Institución o persona ante la que se presentará.'},
+
+    {s:'Otorgante'},
+    {id:'otorgante', et:'Nombre completo de quien otorga'},
+    {id:'otorganteId', et:'Identificación y folio', v:'credencial para votar (INE) folio '},
+    {id:'otorganteDom', et:'Domicilio del otorgante', tipo:'textarea'},
+
+    {s:'Apoderado'},
+    {id:'apoderado', et:'Nombre completo del apoderado'},
+    {id:'apoderadoId', et:'Identificación y folio', v:'credencial para votar (INE) folio '},
+
+    {s:'Objeto del poder'},
+    {id:'objeto', et:'Actos que se autorizan', tipo:'textarea',
+      ayuda:'Ejemplo: recoger documentación oficial, realizar un trámite específico, recibir un pago.'},
+    {id:'vigencia', et:'Vigencia del poder', v:'exclusivamente para el acto señalado'},
+
+    {s:'Testigos'},
+    {id:'testigo1', et:'Nombre del primer testigo'},
+    {id:'testigo2', et:'Nombre del segundo testigo'}
+  ],
+  generar(d){
+    return `
+      <h2>Carta Poder</h2>
+
+      <p class="der">${txt(d.ciudad,25)}, a ${fechaLarga(d.fecha)}</p>
+
+      <p style="margin-top:22px"><b>${mayus(d.dirigida,20)}</b><br>P r e s e n t e.</p>
+
+      <p style="margin-top:20px">El que suscribe, <b>${mayus(d.otorgante)}</b>, quien se identifica con
+      ${txt(d.otorganteId,25)}, con domicilio en ${txt(d.otorganteDom,40)}, por medio del presente
+      escrito y en la forma más amplia que en derecho proceda, <b>otorgo poder</b> a favor de
+      <b>${mayus(d.apoderado)}</b>, quien se identifica con ${txt(d.apoderadoId,25)}, para que en mi nombre
+      y representación realice los siguientes actos:</p>
+
+      <p style="padding-left:26px">${txt(d.objeto,55)}</p>
+
+      <p>El presente poder se otorga ${txt(d.vigencia,20)}, quedando facultado el apoderado para suscribir
+      la documentación que resulte necesaria y para recibir la información y documentos relacionados con el
+      objeto de este mandato.</p>
+
+      <p>Manifiesto que ratifico de antemano y hago propias todas las actuaciones que el apoderado realice
+      dentro de los límites del presente poder, y firmo al margen y al calce para los efectos legales a que
+      haya lugar, ante los testigos que también firman.</p>
+
+      <table class="firmas">
+        <tr>
+          <td>
+            <div class="linea-firma"></div>
+            <b>${mayus(d.otorgante)}</b><br>Otorgante
+          </td>
+          <td>
+            <div class="linea-firma"></div>
+            <b>${mayus(d.apoderado)}</b><br>Acepta el poder
+          </td>
+        </tr>
+        <tr>
+          <td style="padding-top:52px">
+            <div class="linea-firma"></div>
+            <b>${mayus(d.testigo1)}</b><br>Testigo
+          </td>
+          <td style="padding-top:52px">
+            <div class="linea-firma"></div>
+            <b>${mayus(d.testigo2)}</b><br>Testigo
+          </td>
+        </tr>
+      </table>
+
+      <p class="nota-pie">Documento generado con formato automatizado. Ciertos trámites exigen poder
+      notarial; verifique el requisito aplicable con un abogado con cédula profesional.</p>
+    `;
+  }
+},
+
+/* ---------- 4. RECIBO DE RENTA ---------- */
+recibo: {
+  nombre: 'Recibo de renta',
+  campos: [
+    {s:'Recibo'},
+    {id:'folio', et:'Folio', v:'001'},
+    {id:'ciudad', et:'Lugar', v:CIUDAD_DEF},
+    {id:'fecha', et:'Fecha de expedición', tipo:'date', v:HOY},
+
+    {s:'Datos del pago'},
+    {id:'de', et:'Recibí de'},
+    {id:'monto', et:'Cantidad recibida (pesos)', tipo:'number'},
+    {id:'concepto', et:'Concepto', v:'renta mensual del inmueble'},
+    {id:'del', et:'Periodo cubierto: del', tipo:'date'},
+    {id:'al', et:'Periodo cubierto: al', tipo:'date'},
+    {id:'inmueble', et:'Inmueble', tipo:'textarea'},
+    {id:'formaPago', et:'Forma de pago', tipo:'select',
+      opciones:['efectivo','transferencia electrónica','depósito bancario','cheque'], v:'efectivo'},
+
+    {s:'Quien recibe'},
+    {id:'recibio', et:'Nombre de quien recibe'}
+  ],
+  generar(d){
+    return `
+      <h2>Recibo de Pago de Renta</h2>
+
+      <table style="width:100%;margin-bottom:24px;font-size:14px">
+        <tr>
+          <td><b>Folio:</b> ${txt(d.folio,6)}</td>
+          <td class="der"><b>${pesos(d.monto)}</b></td>
+        </tr>
+        <tr>
+          <td>${txt(d.ciudad,25)}</td>
+          <td class="der">${fechaLarga(d.fecha)}</td>
+        </tr>
+      </table>
+
+      <p><b>Recibí de:</b> ${mayus(d.de)}</p>
+
+      <p><b>La cantidad de:</b> ${pesos(d.monto)} ${pesosALetras(d.monto)}, pagada en
+      ${txt(d.formaPago,12)}.</p>
+
+      <p><b>Por concepto de:</b> ${txt(d.concepto,30)}, correspondiente al periodo comprendido del
+      <b>${fechaLarga(d.del)}</b> al <b>${fechaLarga(d.al)}</b>.</p>
+
+      <p><b>Inmueble:</b> ${txt(d.inmueble,45)}</p>
+
+      <p style="margin-top:18px">Con la expedición del presente recibo se tiene por cubierta la renta del
+      periodo señalado, sin que ello implique conformidad respecto de adeudos por servicios u otros
+      conceptos pendientes.</p>
+
+      <table class="firmas">
+        <tr>
+          <td colspan="2">
+            <div class="linea-firma" style="width:65%;margin:0 auto 6px"></div>
+            <b>${mayus(d.recibio)}</b><br>Recibió
+          </td>
+        </tr>
+      </table>
+
+      <p class="nota-pie">Este recibo no constituye comprobante fiscal digital (CFDI).</p>
+    `;
+  }
+}
+
+};
+
+/* ============================================================
+   INTERFAZ
+   ============================================================ */
+
+let actual = 'arrendamiento';
+
+function initSelector(){
+  const sel = document.getElementById('plantilla');
+  sel.innerHTML = Object.entries(PLANTILLAS)
+    .map(([k,p]) => `<option value="${k}">${p.nombre}</option>`).join('');
+}
+
+function claveGuardado(k){ return 'gendoc:' + k; }
+
+function cambiarPlantilla(k){
+  actual = k;
+  const p = PLANTILLAS[k];
+  const guardado = JSON.parse(localStorage.getItem(claveGuardado(k)) || '{}');
+  const form = document.getElementById('formulario');
+
+  form.innerHTML = p.campos.map(c => {
+    if(c.s) return `<div class="seccion">${c.s}</div>`;
+
+    const val = guardado[c.id] !== undefined ? guardado[c.id] : (c.v || '');
+    const ayuda = c.ayuda ? `<div class="ayuda">${c.ayuda}</div>` : '';
+    let control;
+
+    if(c.tipo === 'textarea'){
+      control = `<textarea id="${c.id}" oninput="render()">${val}</textarea>`;
+    } else if(c.tipo === 'select'){
+      control = `<select id="${c.id}" onchange="render()">` +
+        c.opciones.map(o => `<option${o === val ? ' selected' : ''}>${o}</option>`).join('') +
+        `</select>`;
+    } else {
+      control = `<input type="${c.tipo || 'text'}" id="${c.id}" value="${String(val).replace(/"/g,'&quot;')}" oninput="render()">`;
+    }
+
+    return `<div class="grupo"><label for="${c.id}">${c.et}</label>${control}${ayuda}</div>`;
+  }).join('');
+
+  render();
+}
+
+function datos(){
+  const d = {};
+  PLANTILLAS[actual].campos.forEach(c => {
+    if(!c.id) return;
+    const el = document.getElementById(c.id);
+    if(el) d[c.id] = el.value;
+  });
+  return d;
+}
+
+function render(){
+  const d = datos();
+  localStorage.setItem(claveGuardado(actual), JSON.stringify(d));
+  document.getElementById('doc').innerHTML = PLANTILLAS[actual].generar(d);
+}
+
+function limpiar(){
+  if(!confirm('¿Borrar todos los datos capturados de este documento?')) return;
+  localStorage.removeItem(claveGuardado(actual));
+  cambiarPlantilla(actual);
+}
+
+function descargarWord(){
+  const cuerpo = document.getElementById('doc').innerHTML;
+  const html =
+    `<html xmlns:o="urn:schemas-microsoft-com:office:office" ` +
+    `xmlns:w="urn:schemas-microsoft-com:office:word" ` +
+    `xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">` +
+    `<title>${PLANTILLAS[actual].nombre}</title>` +
+    `<style>@page{size:21.59cm 27.94cm;margin:2.5cm 3cm}` +
+    `body{font-family:"Times New Roman",serif;font-size:12pt;line-height:1.7;text-align:justify}` +
+    `h2{text-align:center;font-size:13pt;text-transform:uppercase}` +
+    `h3{font-size:12pt;text-transform:uppercase}` +
+    `table{width:100%}td{vertical-align:top}` +
+    `.firmas td{width:50%;text-align:center;padding:0 12px}` +
+    `.linea-firma{border-top:1px solid #000;margin-bottom:6px}` +
+    `.centro{text-align:center}.der{text-align:right}` +
+    `.nota-pie{font-size:9pt;color:#555;font-style:italic}</style>` +
+    `</head><body>${cuerpo}</body></html>`;
+
+  const blob = new Blob(['\ufeff', html], {type:'application/msword'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = PLANTILLAS[actual].nombre.replace(/ /g,'-').toLowerCase() + '.doc';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+initSelector();
+cambiarPlantilla('arrendamiento');
+</script>
+</body>
+</html>
