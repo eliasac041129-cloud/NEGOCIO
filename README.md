@@ -14,6 +14,7 @@ Todo lo que necesitas para conseguir tu primer cliente, sin invertir un peso.
 | `portafolio/index.html` | Tu página personal. Aquí llegan los clientes. |
 | `ventas/guion-whatsapp.md` | Qué decir, palabra por palabra, en cada situación. |
 | `ventas/precios.md` | Cuánto cobrar y las reglas para cobrarlo bien. |
+| `ventas/publicidad.md` | Para qué sirve el generador y dónde anunciarte con $0. |
 
 ---
 
