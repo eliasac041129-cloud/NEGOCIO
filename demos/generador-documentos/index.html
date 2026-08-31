@@ -109,6 +109,26 @@
   #doc .linea-firma{border-top:1px solid #000;margin-bottom:6px;padding-top:0}
   #doc .nota-pie{margin-top:40px;font-size:11px;color:#555;font-style:italic;border-top:1px solid #ccc;padding-top:10px;text-align:left}
 
+  /* --- Títulos accionarios --- */
+  #doc .orla{border:3px double #000;padding:34px 38px}
+  #doc .marca{text-align:center;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:14px}
+  #doc .tbl-datos{width:100%;border-collapse:collapse;margin:0 0 24px;font-size:13.5px}
+  #doc .tbl-datos td{border:1px solid #000;padding:6px 9px;vertical-align:top;text-align:left;width:50%}
+  #doc .tbl-cifras{width:100%;border-collapse:collapse;margin:10px 0 14px;font-size:13.5px}
+  #doc .tbl-cifras th,#doc .tbl-cifras td{border:1px solid #000;padding:5px 9px}
+  #doc .tbl-cifras th{background:#f0f0f0;text-align:left;font-size:12.5px;text-transform:none;letter-spacing:0}
+  #doc .tbl-cifras td:last-child{text-align:right}
+  #doc .tbl-reverso{width:100%;border-collapse:collapse;margin:8px 0 22px;font-size:10.5px}
+  #doc .tbl-reverso th,#doc .tbl-reverso td{border:1px solid #000;padding:5px 4px;text-align:center}
+  #doc .tbl-reverso th{background:#f0f0f0;font-size:9.5px;text-transform:uppercase;letter-spacing:.3px}
+  #doc .tbl-reverso td{height:28px}
+  #doc .tbl-cupones{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}
+  #doc .tbl-cupones td{border:1px dashed #000;padding:9px 10px;font-size:10.5px;line-height:1.55;vertical-align:top;text-align:left;width:33.33%}
+  #doc .cnum{font-weight:bold;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #000;padding-bottom:4px;margin-bottom:6px}
+  #doc .corte{border-top:1px dashed #999;margin:36px 0 22px;text-align:center}
+  #doc .corte span{position:relative;top:-9px;background:#fff;padding:0 12px;font-family:-apple-system,Segoe UI,sans-serif;font-size:10px;color:#777;text-transform:uppercase;letter-spacing:1.4px}
+  #doc .variante{font-size:11.5px;color:#444;border-left:2px solid #999;padding:2px 0 2px 12px;margin:0 0 14px;font-style:italic}
+
   .aviso{
     background:var(--acento-claro);
     border-left:3px solid var(--acento);
@@ -183,6 +203,19 @@ function pesos(n){
   const v = Number(n);
   if(!isFinite(v) || n === '' || n === null) return '$________';
   return new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN'}).format(v);
+}
+
+function numero(n){
+  const v = Number(n);
+  if(!isFinite(v) || n === '' || n === null) return '______';
+  return new Intl.NumberFormat('es-MX').format(v);
+}
+
+/* "5,000 (cinco mil)" */
+function numeroConLetra(n){
+  const v = Number(n);
+  if(!isFinite(v) || n === '' || n === null) return '______ (____________)';
+  return `${numero(v)} (${apocope(enteroALetras(Math.floor(Math.abs(v)))).toLowerCase()})`;
 }
 
 const UNIDADES = ['','UNO','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ',
@@ -668,6 +701,439 @@ recibo: {
       <p class="nota-pie">Este recibo no constituye comprobante fiscal digital (CFDI).</p>
     `;
   }
+},
+
+/* ---------- 5. TÍTULO ACCIONARIO (art. 125 LGSM) ---------- */
+tituloAccionario: {
+  nombre: 'Título accionario (art. 125 LGSM)',
+  campos: [
+    {s:'Datos del título'},
+    {id:'clase', et:'Clase de documento', tipo:'select',
+      opciones:['Título definitivo de acciones','Certificado provisional de acciones'],
+      v:'Título definitivo de acciones',
+      ayuda:'El art. 125 LGSM exige los mismos requisitos para ambos.'},
+    {id:'numTitulo', et:'Número de título', v:'0047'},
+    {id:'serie', et:'Serie', v:'A'},
+    {id:'ciudad', et:'Lugar de expedición', v:CIUDAD_DEF},
+    {id:'fecha', et:'Fecha de expedición', tipo:'date', v:HOY},
+
+    {s:'I. Accionista titular'},
+    {id:'accionista', et:'Nombre completo o denominación'},
+    {id:'nacionalidad', et:'Nacionalidad', v:'mexicana'},
+    {id:'domAccionista', et:'Domicilio del accionista', tipo:'textarea',
+      ayuda:'Calle, número, colonia, C.P., municipio o alcaldía y entidad federativa.'},
+
+    {s:'II. Sociedad emisora'},
+    {id:'denominacion', et:'Denominación social', v:'Comercializadora del Bajío, S.A. de C.V.'},
+    {id:'domSocial', et:'Domicilio social', v:'León, Guanajuato'},
+    {id:'duracion', et:'Duración de la sociedad', v:'99',
+      ayuda:'Años en número, o escribe "indefinida".'},
+
+    {s:'III. Constitución e inscripción'},
+    {id:'escritura', et:'Número de escritura pública', v:'12,345'},
+    {id:'fechaConst', et:'Fecha de constitución', tipo:'date'},
+    {id:'notario', et:'Nombre del notario'},
+    {id:'numNotario', et:'Número de notaría'},
+    {id:'plazaNotario', et:'Plaza de la notaría', v:'León, Guanajuato'},
+    {id:'folioMercantil', et:'Folio mercantil electrónico'},
+    {id:'fechaInscripcion', et:'Fecha de inscripción en el RPC', tipo:'date'},
+
+    {s:'IV. Capital social'},
+    {id:'valorExpreso', et:'Valor nominal', tipo:'select',
+      opciones:['Con valor nominal expreso','Sin expresión de valor nominal'],
+      v:'Con valor nominal expreso',
+      ayuda:'Si el contrato social lo prevé, se omite el valor nominal y también el importe del capital.'},
+    {id:'capitalFijo', et:'Capital mínimo fijo (pesos)', tipo:'number', v:'5000000'},
+    {id:'capitalVariable', et:'Capital variable (pesos)', tipo:'number', v:'3000000'},
+    {id:'totalAcciones', et:'Número total de acciones de la sociedad', tipo:'number', v:'80000'},
+    {id:'valorNominal', et:'Valor nominal por acción (pesos)', tipo:'number', v:'100'},
+
+    {s:'V. Exhibiciones pagadas'},
+    {id:'estadoPago', et:'Estado de pago', tipo:'select',
+      opciones:['Íntegramente pagadas y liberadas','Parcialmente exhibidas (acciones pagadoras)'],
+      v:'Íntegramente pagadas y liberadas'},
+    {id:'montoExhibido', et:'Importe exhibido por acción (pesos)', tipo:'number',
+      ayuda:'Solo si son acciones pagadoras.'},
+    {id:'aportacion', et:'Forma de la aportación', tipo:'select',
+      opciones:['en numerario','en bienes (especie)','mixta, en numerario y en especie'], v:'en numerario'},
+    {id:'fechaAsamblea', et:'Fecha del acta de asamblea', tipo:'date'},
+
+    {s:'VI. Serie y numeración'},
+    {id:'numAcciones', et:'Acciones que ampara este título', tipo:'number', v:'5000'},
+    {id:'accDesde', et:'Numeradas desde', v:'00,001'},
+    {id:'accHasta', et:'Numeradas hasta', v:'05,000'},
+    {id:'accionesSerie', et:'Total de acciones de la serie', tipo:'number', v:'50000'},
+    {id:'porcionCapital', et:'Porción del capital que representa la serie', tipo:'select',
+      opciones:['la porción mínima fija del capital social','la porción variable del capital social'],
+      v:'la porción mínima fija del capital social'},
+
+    {s:'VII. Derechos y limitaciones'},
+    {id:'tipoAccion', et:'Clase de acciones', tipo:'select',
+      opciones:['Ordinarias, de voto pleno',
+                'De voto limitado (art. 113 LGSM)',
+                'Preferentes, de dividendo preferente y acumulativo',
+                'De goce (art. 137 LGSM)',
+                'De trabajo (art. 114 LGSM)'],
+      v:'Ordinarias, de voto pleno'},
+    {id:'votos', et:'Votos por acción', v:'1'},
+    {id:'limitaciones', et:'Limitaciones al voto, utilidades o haber social', tipo:'textarea',
+      ayuda:'Déjalo en blanco si no hay limitaciones. La fracc. VII obliga a expresarlas.'},
+    {id:'restriccion130', et:'Transmisión de las acciones', tipo:'select',
+      opciones:['Requiere autorización del consejo de administración (art. 130 LGSM)',
+                'Libremente transmisibles'],
+      v:'Requiere autorización del consejo de administración (art. 130 LGSM)'},
+    {id:'derechoTanto', et:'Derecho del tanto a favor de los accionistas', tipo:'select',
+      opciones:['Sí','No'], v:'Sí'},
+    {id:'clausulaExt', et:'Cláusula sobre extranjeros', tipo:'select',
+      opciones:['Exclusión de extranjeros','Admisión de extranjeros (cláusula Calvo)','No aplicable'],
+      v:'Exclusión de extranjeros'},
+
+    {s:'VIII. Firmas de los administradores'},
+    {id:'firmante1', et:'Nombre del primer administrador'},
+    {id:'cargo1', et:'Cargo', v:'Presidente del Consejo de Administración'},
+    {id:'firmante2', et:'Nombre del segundo administrador'},
+    {id:'cargo2', et:'Cargo', v:'Secretario del Consejo de Administración'},
+    {id:'tipoFirma', et:'Tipo de firma', tipo:'select',
+      opciones:['Autógrafa','Facsímil, con depósito del original en el Registro Público de Comercio'],
+      v:'Autógrafa'},
+
+    {s:'Anexos'},
+    {id:'incluirReverso', et:'Incluir reverso para endosos y anotaciones', tipo:'select',
+      opciones:['Sí','No'], v:'Sí'},
+    {id:'numCupones', et:'Número de cupones a imprimir (art. 126 LGSM)', tipo:'number', v:'6',
+      ayuda:'Captura 0 para no imprimir cupones.'},
+    {id:'anexoLegal', et:'Anexo de fundamento del art. 125', tipo:'select',
+      opciones:['Sí','No'], v:'No',
+      ayuda:'Agrega una tabla que ubica cada fracción del artículo. Útil para uso académico.'}
+  ],
+  generar(d){
+    let n = 0;
+    const c = () => ordinal(++n);
+
+    const provisional  = d.clase === 'Certificado provisional de acciones';
+    const sinVN        = d.valorExpreso === 'Sin expresión de valor nominal';
+    const liberadas    = d.estadoPago === 'Íntegramente pagadas y liberadas';
+    const restringida  = (d.restriccion130 || '').startsWith('Requiere');
+
+    const nAcc  = Number(d.numAcciones) || 0;
+    const vn    = Number(d.valorNominal) || 0;
+    const valorTitulo = nAcc * vn;
+
+    const cf  = Number(d.capitalFijo) || 0;
+    const cv  = Number(d.capitalVariable) || 0;
+    const capTotal = cf + cv;
+
+    const exhibido  = Number(d.montoExhibido) || 0;
+    const pendiente = Math.max(0, vn - exhibido);
+    const pct = vn > 0 ? Math.round((exhibido / vn) * 10000) / 100 : 0;
+
+    const dur = (d.duracion || '').trim();
+    const duracionTxt = /^\d+$/.test(dur)
+      ? `${dur} (${enteroALetras(Number(dur)).toLowerCase()}) años contados a partir de la fecha de firma de la escritura constitutiva`
+      : (dur ? dur : '____________');
+
+    const votoPleno = d.tipoAccion === 'Ordinarias, de voto pleno';
+    const limitaciones = (d.limitaciones || '').trim();
+
+    /* ---- Fracción IV: cuadro de capital ---- */
+    const filasCapital = sinVN ? '' : `
+      <table class="tbl-cifras">
+        <tr><th>Concepto</th><th style="text-align:right">Importe / Cantidad</th></tr>
+        <tr><td>Capital social mínimo fijo</td><td>${pesos(cf)}</td></tr>
+        <tr><td>Capital social variable</td><td>${pesos(cv)}</td></tr>
+        <tr><td><b>Capital social total suscrito</b></td><td><b>${pesos(capTotal)}</b></td></tr>
+        <tr><td>Número total de acciones</td><td>${numero(d.totalAcciones)}</td></tr>
+        <tr><td>Valor nominal por acción</td><td>${pesos(vn)}</td></tr>
+      </table>`;
+
+    /* Se evalúan de forma diferida: el contador de ordinales debe avanzar
+       en el orden en que las cláusulas aparecen en el documento. */
+    const clausulaCapital = () => sinVN
+      ? `<p class="clausula"><b>${c()}. CAPITAL SOCIAL.</b> Las acciones que ampara el presente
+         ${provisional ? 'certificado' : 'título'} son <b>sin expresión de valor nominal</b>, conforme a la
+         cláusula ____ de los estatutos sociales, por lo que en términos del párrafo tercero de la fracción IV
+         del artículo 125 de la Ley General de Sociedades Mercantiles se omite también la mención del importe
+         del capital social. El capital social se encuentra dividido en ${numeroConLetra(d.totalAcciones)}
+         acciones.</p>`
+      : `<p class="clausula"><b>${c()}. CAPITAL SOCIAL Y ACCIONES.</b> El capital social de la sociedad
+         asciende a la cantidad de <b>${pesos(capTotal)}</b> ${pesosALetras(capTotal)}, íntegramente suscrito
+         y representado por ${numeroConLetra(d.totalAcciones)} acciones nominativas con valor nominal de
+         ${pesos(vn)} ${pesosALetras(vn)} cada una, conforme al siguiente detalle:</p>
+         ${filasCapital}
+         <p class="variante">Al integrarse el capital social mediante diversas series de acciones, las
+         menciones relativas al importe del capital y al número de acciones se concretan, en cada emisión, a
+         los totales que se alcancen con cada una de dichas series, en términos del párrafo segundo de la
+         fracción IV del artículo 125 de la Ley General de Sociedades Mercantiles.</p>`;
+
+    /* ---- Fracción V: exhibiciones ---- */
+    const clausulaExhibiciones = () => liberadas
+      ? `<p class="clausula"><b>${c()}. EXHIBICIONES PAGADAS.</b> Las acciones que ampara este
+         ${provisional ? 'certificado' : 'título'} se encuentran <b>íntegramente pagadas y liberadas</b>, al
+         haberse cubierto el cien por ciento de su valor${sinVN ? '' : ` nominal, esto es, la cantidad de ${pesos(valorTitulo)} ${pesosALetras(valorTitulo)}`},
+         mediante aportación ${txt(d.aportacion,12)}, según consta en el acta de la asamblea general de
+         accionistas de fecha ${fechaLarga(d.fechaAsamblea)} y en la contabilidad social.</p>`
+      : `<p class="clausula"><b>${c()}. EXHIBICIONES PAGADAS.</b> Sobre el valor de cada una de las acciones
+         que ampara este ${provisional ? 'certificado' : 'título'}, el accionista ha exhibido la cantidad de
+         <b>${pesos(exhibido)}</b> ${pesosALetras(exhibido)}, equivalente al <b>${pct}%</b> de su valor
+         nominal, mediante aportación ${txt(d.aportacion,12)}, quedando pendiente de exhibir la cantidad de
+         <b>${pesos(pendiente)}</b> ${pesosALetras(pendiente)} por acción, pagadera en los términos, montos y
+         plazos que fije la asamblea general de accionistas o el consejo de administración, con las
+         consecuencias previstas en los artículos 118 a 121 de la Ley General de Sociedades Mercantiles en
+         caso de mora.</p>`;
+
+    /* ---- Fracción VII: derechos ---- */
+    const derechoVoto = votoPleno
+      ? `<b>Derecho de voto pleno</b>, con derecho a ${txt(d.votos,1)} voto por cada acción en las asambleas
+         generales ordinarias y extraordinarias de accionistas, en términos de los artículos 113 y 189 de la
+         Ley General de Sociedades Mercantiles.`
+      : `<b>Derecho de voto en los términos propios de su clase</b> (${txt(d.tipoAccion,20)}), con
+         ${txt(d.votos,1)} voto por acción exclusivamente en los asuntos que la ley y los estatutos sociales
+         reservan a esta clase de acciones, conforme al artículo 113 de la Ley General de Sociedades
+         Mercantiles.`;
+
+    const leyendaExtranjeros = d.clausulaExt === 'Exclusión de extranjeros'
+      ? `<b>Cláusula de exclusión de extranjeros.</b> Conforme a la cláusula ____ de los estatutos sociales,
+         ningún extranjero podrá ser socio o accionista de la sociedad; si por cualquier evento alguna acción
+         llegare a ser adquirida por un extranjero, dicha adquisición será nula y, en consecuencia, quedará
+         cancelada la acción de que se trate.`
+      : d.clausulaExt === 'Admisión de extranjeros (cláusula Calvo)'
+      ? `<b>Cláusula de admisión de extranjeros.</b> Todo extranjero que en el acto de la constitución o en
+         cualquier tiempo ulterior adquiera un interés o participación social en la sociedad se considerará,
+         por ese simple hecho, como mexicano respecto de uno y otra, y se entenderá que conviene en no
+         invocar la protección de su gobierno, bajo la pena, en caso de faltar a su convenio, de perder dicho
+         interés o participación en beneficio de la Nación Mexicana.`
+      : '';
+
+    /* ---- Reverso ---- */
+    const filaVacia = (cols) => '<tr>' + '<td></td>'.repeat(cols) + '</tr>';
+    const reverso = d.incluirReverso === 'No' ? '' : `
+      <div class="corte"><span>Reverso del ${provisional ? 'certificado' : 'título'}</span></div>
+
+      <h3>A) Endosos y transmisiones (arts. 129 y 131 LGSM)</h3>
+      <table class="tbl-reverso">
+        <tr>
+          <th>No.</th><th>Fecha</th><th>Endosante</th><th>Endosatario</th><th>Acciones</th>
+          ${restringida ? '<th>Autorización del consejo</th>' : ''}
+          <th>Registro de acciones</th><th>Firma del secretario</th>
+        </tr>
+        ${filaVacia(restringida ? 8 : 7).repeat(4)}
+      </table>
+
+      <h3>B) Exhibiciones posteriores (art. 125, fracc. V)</h3>
+      <table class="tbl-reverso">
+        <tr><th>Fecha</th><th>Importe exhibido</th><th>% acumulado pagado</th><th>Recibo o póliza</th><th>Firma autorizada</th></tr>
+        ${filaVacia(5).repeat(3)}
+      </table>
+
+      <h3>C) Gravámenes, prenda o usufructo</h3>
+      <table class="tbl-reverso">
+        <tr><th>Fecha</th><th>Tipo de gravamen</th><th>Acreedor o beneficiario</th><th>Documento base</th><th>Firma autorizada</th></tr>
+        ${filaVacia(5).repeat(2)}
+      </table>
+
+      <h3>D) Leyenda de cancelación</h3>
+      <p style="font-size:13px">Cancelado por ______________________ (canje, reducción de capital,
+      amortización o reposición), según acuerdo de la asamblea general de accionistas de fecha
+      ______________________. Se expide en sustitución el ${provisional ? 'certificado' : 'título'} número
+      ____________.</p>`;
+
+    /* ---- Cupones (art. 126 LGSM) ---- */
+    const nCup = Math.max(0, Math.min(24, Number(d.numCupones) || 0));
+    let cupones = '';
+    if(nCup > 0 && !provisional){
+      const celdas = [];
+      for(let i = 1; i <= nCup; i++){
+        celdas.push(`<td>
+          <div class="cnum">Cupón No. ${i}</div>
+          <b>${mayus(d.denominacion,16)}</b><br>
+          Título No. ${txt(d.numTitulo,5)} &middot; Serie &ldquo;${txt(d.serie,1)}&rdquo;<br>
+          Acciones amparadas: ${numero(d.numAcciones)}<br><br>
+          Ejercicio social: ____________<br>
+          Dividendo por acción: $__________<br>
+          Importe total: $______________<br>
+          Asamblea de fecha: ____________<br><br>
+          Pagadero contra entrega de este cupón en el domicilio social.<br><br>
+          Firma: ________________
+        </td>`);
+      }
+      while(celdas.length % 3 !== 0) celdas.push('<td style="border:none"></td>');
+      let filas = '';
+      for(let i = 0; i < celdas.length; i += 3) filas += '<tr>' + celdas.slice(i, i+3).join('') + '</tr>';
+      cupones = `
+        <div class="corte"><span>Cupones adheridos &middot; art. 126 LGSM</span></div>
+        <p style="font-size:13px">Los presentes cupones se desprenden del título y se entregan a la sociedad
+        contra el pago de los dividendos o intereses correspondientes, en términos del artículo 126 de la Ley
+        General de Sociedades Mercantiles.</p>
+        <table class="tbl-cupones">${filas}</table>`;
+    }
+
+    /* ---- Anexo académico ---- */
+    const anexo = d.anexoLegal === 'No' ? '' : `
+      <div class="corte"><span>Anexo &middot; fundamento legal</span></div>
+      <h3>Requisitos del artículo 125 LGSM</h3>
+      <table class="tbl-cifras">
+        <tr><th style="width:52px">Fracc.</th><th>Requisito legal</th><th style="width:150px">Ubicación</th></tr>
+        <tr><td>I</td><td>Nombre, nacionalidad y domicilio del accionista</td><td>Cláusula primera</td></tr>
+        <tr><td>II</td><td>Denominación, domicilio y duración de la sociedad</td><td>Encabezado y cláusula segunda</td></tr>
+        <tr><td>III</td><td>Fecha de constitución y datos de inscripción en el Registro Público de Comercio</td><td>Cláusula tercera</td></tr>
+        <tr><td>IV</td><td>Importe del capital social, número total y valor nominal de las acciones</td><td>Cláusula cuarta</td></tr>
+        <tr><td>V</td><td>Exhibiciones pagadas o indicación de ser liberada</td><td>Cláusula quinta</td></tr>
+        <tr><td>VI</td><td>Serie y número de la acción, con el total de acciones de la serie</td><td>Cláusula sexta y encabezado</td></tr>
+        <tr><td>VII</td><td>Derechos concedidos y obligaciones impuestas; limitaciones al voto, a las utilidades y al haber social</td><td>Cláusula séptima</td></tr>
+        <tr><td>VIII</td><td>Firma autógrafa de los administradores, o facsímil con depósito del original en el RPC</td><td>Sección de firmas</td></tr>
+      </table>
+      <p style="font-size:13px">Preceptos complementarios: artículo 111 (naturaleza del título y aplicación
+      supletoria de las reglas de los títulos de crédito), 112 (igualdad de valor y derechos), 113 (voto
+      limitado), 124 (un título puede amparar una o varias acciones), 126 (cupones), 128 y 129 (registro de
+      acciones y legitimación del accionista), 130 (autorización del consejo para la transmisión) y 131
+      (transmisión por endoso e inscripción en el registro), todos de la Ley General de Sociedades
+      Mercantiles.</p>`;
+
+    /* ---- Documento ---- */
+    return `
+      <div class="orla">
+        <div class="marca">${mayus(d.denominacion,20)}</div>
+
+        <h2 style="margin-bottom:8px">${txt(d.clase,20)}</h2>
+        <p class="centro" style="font-size:12.5px;margin-bottom:22px">
+          Sociedad mercantil constituida conforme a las leyes de los Estados Unidos Mexicanos<br>
+          Título nominativo expedido en términos de los artículos 111, 124 y 125 de la Ley General de
+          Sociedades Mercantiles
+        </p>
+
+        <table class="tbl-datos">
+          <tr>
+            <td><b>${provisional ? 'Certificado' : 'Título'} número:</b> ${txt(d.numTitulo,8)}</td>
+            <td><b>Serie:</b> &ldquo;${txt(d.serie,3)}&rdquo;</td>
+          </tr>
+          <tr>
+            <td><b>Acciones que ampara:</b> ${numeroConLetra(d.numAcciones)}</td>
+            <td><b>Valor nominal unitario:</b> ${sinVN ? 'sin expresión de valor nominal' : pesos(vn)}</td>
+          </tr>
+          <tr>
+            <td><b>Valor total del ${provisional ? 'certificado' : 'título'}:</b> ${sinVN ? 'no aplicable' : pesos(valorTitulo)}</td>
+            <td><b>Lugar y fecha de expedición:</b> ${txt(d.ciudad,20)}, a ${fechaLarga(d.fecha)}</td>
+          </tr>
+        </table>
+
+        <p class="clausula"><b>${c()}. TITULAR DE LAS ACCIONES.</b> El presente
+        ${provisional ? 'certificado provisional' : 'título'} se expide a favor del accionista
+        <b>${mayus(d.accionista)}</b>, de nacionalidad ${txt(d.nacionalidad,10)}, con domicilio en
+        ${txt(d.domAccionista,45)}, quien queda inscrito con tal calidad en el Registro de Acciones de la
+        sociedad previsto en el artículo 128 de la Ley General de Sociedades Mercantiles.</p>
+
+        <p class="clausula"><b>${c()}. SOCIEDAD EMISORA.</b> La sociedad emisora se denomina
+        <b>${mayus(d.denominacion,20)}</b>, tiene su domicilio social en ${txt(d.domSocial,20)}, Estados
+        Unidos Mexicanos, y su duración es de ${duracionTxt}.</p>
+
+        <p class="clausula"><b>${c()}. CONSTITUCIÓN E INSCRIPCIÓN.</b> La sociedad se constituyó mediante
+        escritura pública número ${txt(d.escritura,8)}, de fecha ${fechaLarga(d.fechaConst)}, otorgada ante
+        la fe del licenciado ${txt(d.notario,25)}, Notario Público número ${txt(d.numNotario,4)} de
+        ${txt(d.plazaNotario,20)}, cuyo primer testimonio quedó inscrito en el <b>Registro Público de
+        Comercio</b> de dicha plaza bajo el folio mercantil electrónico número ${txt(d.folioMercantil,14)},
+        con fecha ${fechaLarga(d.fechaInscripcion)}.</p>
+
+        ${clausulaCapital()}
+
+        ${clausulaExhibiciones()}
+
+        <p class="clausula"><b>${c()}. SERIE Y NUMERACIÓN.</b> Las acciones amparadas por este
+        ${provisional ? 'certificado' : 'título'} pertenecen a la <b>Serie &ldquo;${txt(d.serie,3)}&rdquo;</b>,
+        representativa de ${txt(d.porcionCapital,25)}, y están numeradas de la ${txt(d.accDesde,6)} a la
+        ${txt(d.accHasta,6)}, ambas inclusive. La referida serie se integra por un total de
+        ${numeroConLetra(d.accionesSerie)} acciones.</p>
+
+        <p class="clausula"><b>${c()}. DERECHOS Y OBLIGACIONES DEL TENEDOR.</b> Las acciones amparadas por
+        este ${provisional ? 'certificado' : 'título'} son <b>${txt(d.tipoAccion,20).toLowerCase()}</b> y
+        confieren a su legítimo tenedor los derechos y le imponen las obligaciones que a continuación se
+        expresan.</p>
+
+        <p class="clausula"><b>A) Derechos.</b></p>
+        <p class="clausula" style="padding-left:22px"><b>1.</b> ${derechoVoto}</p>
+        <p class="clausula" style="padding-left:22px"><b>2.</b> <b>Derecho al dividendo</b>, en proporción a
+        la participación que estas acciones representan en el capital social, previa aprobación de los estados
+        financieros por la asamblea general de accionistas y previa separación de la reserva legal, en
+        términos de los artículos 19 y 20 de la Ley General de Sociedades Mercantiles.</p>
+        <p class="clausula" style="padding-left:22px"><b>3.</b> <b>Derecho de preferencia</b> para suscribir
+        las acciones que se emitan con motivo de aumentos del capital social, en proporción a su tenencia y
+        dentro del plazo previsto por el artículo 132 de la Ley General de Sociedades Mercantiles.</p>
+        <p class="clausula" style="padding-left:22px"><b>4.</b> <b>Derecho a la cuota de liquidación</b> sobre
+        el haber social, en proporción a su participación, conforme a los artículos 234 a 248 de la Ley
+        General de Sociedades Mercantiles.</p>
+        <p class="clausula" style="padding-left:22px"><b>5.</b> <b>Derechos de minoría</b>, en los términos y
+        porcentajes previstos por los artículos 163, 181, 199 y 201 de la Ley General de Sociedades
+        Mercantiles.</p>
+        <p class="clausula" style="padding-left:22px"><b>6.</b> <b>Derecho de información</b> respecto de los
+        estados financieros y de sus anexos, dentro del plazo señalado por el artículo 173 de la Ley General
+        de Sociedades Mercantiles.</p>
+
+        <p class="clausula"><b>B) Obligaciones y limitaciones.</b></p>
+        <p class="clausula" style="padding-left:22px"><b>1.</b> ${liberadas
+          ? 'Sujetarse a los estatutos sociales y a los acuerdos legalmente adoptados por las asambleas de accionistas y por el consejo de administración.'
+          : 'Cubrir oportunamente las exhibiciones pendientes señaladas en la cláusula correspondiente, con las consecuencias previstas en los artículos 118 a 121 de la Ley General de Sociedades Mercantiles, así como sujetarse a los estatutos sociales y a los acuerdos legalmente adoptados por los órganos sociales.'}</p>
+        ${limitaciones ? `<p class="clausula" style="padding-left:22px"><b>2.</b> <b>Limitaciones al derecho
+        de voto, a la participación en las utilidades o en el haber social:</b> ${txt(limitaciones,45)}</p>` : ''}
+        <p class="clausula" style="padding-left:22px"><b>${limitaciones ? 3 : 2}.</b> ${restringida
+          ? `<b>Restricción a la transmisión.</b> Conforme a la cláusula ____ de los estatutos sociales y al artículo 130 de la Ley General de Sociedades Mercantiles, la transmisión de estas acciones sólo podrá efectuarse con la autorización previa y por escrito del consejo de administración, el cual podrá negarla designando comprador de las acciones al precio corriente en el mercado.`
+          : `<b>Transmisibilidad.</b> Estas acciones son libremente transmisibles mediante endoso, sin necesidad de autorización de órgano social alguno, sin perjuicio de la obligación de inscribir la transmisión en el Registro de Acciones.`}</p>
+        ${d.derechoTanto === 'Sí' ? `<p class="clausula" style="padding-left:22px"><b>${limitaciones ? 4 : 3}.</b>
+        <b>Derecho del tanto.</b> Previamente a cualquier enajenación a favor de terceros, el accionista
+        deberá ofrecer las acciones a los demás accionistas de la sociedad, en los términos y plazos
+        establecidos en la cláusula ____ de los estatutos sociales.</p>` : ''}
+        ${leyendaExtranjeros ? `<p class="clausula" style="padding-left:22px">
+        <b>${(limitaciones ? 4 : 3) + (d.derechoTanto === 'Sí' ? 1 : 0)}.</b> ${leyendaExtranjeros}</p>` : ''}
+        <p class="clausula" style="padding-left:22px">
+        <b>${(limitaciones ? 4 : 3) + (d.derechoTanto === 'Sí' ? 1 : 0) + (leyendaExtranjeros ? 1 : 0)}.</b>
+        <b>Legitimación.</b> La sociedad reputará como dueño de estas acciones únicamente a quien aparezca
+        inscrito como tal en el Registro de Acciones, en términos de los artículos 128 y 129 de la Ley General
+        de Sociedades Mercantiles. Toda transmisión deberá anotarse en dicho registro para surtir efectos
+        frente a la sociedad, conforme al artículo 131 del mismo ordenamiento.</p>
+
+        ${provisional ? `<p class="clausula"><b>${c()}. CANJE POR TÍTULO DEFINITIVO.</b> El presente
+        certificado provisional será canjeado por el título definitivo de acciones que corresponda, dentro del
+        plazo de ____________, contra su devolución y cancelación. Mientras subsista, acredita la calidad de
+        accionista y los derechos aquí consignados.</p>` : ''}
+
+        <p class="clausula"><b>${c()}. LEGISLACIÓN Y JURISDICCIÓN APLICABLES.</b> El presente
+        ${provisional ? 'certificado' : 'título'} se rige por la Ley General de Sociedades Mercantiles y, en
+        lo que resulte compatible, por la Ley General de Títulos y Operaciones de Crédito. Para la
+        interpretación y cumplimiento de los derechos y obligaciones aquí consignados, las partes se someten a
+        la jurisdicción de los tribunales competentes de ${txt(d.domSocial,20)}, con renuncia expresa a
+        cualquier otro fuero que por razón de domicilio presente o futuro pudiera corresponderles.</p>
+
+        <p style="margin-top:24px">Se expide el presente ${provisional ? 'certificado provisional' : 'título'}
+        en ${txt(d.ciudad,20)}, a ${fechaLarga(d.fecha)}, suscrito por los administradores facultados
+        conforme a la cláusula ____ de los estatutos sociales.</p>
+
+        <table class="firmas">
+          <tr>
+            <td>
+              <div class="linea-firma"></div>
+              <b>${mayus(d.firmante1)}</b><br>${txt(d.cargo1,24)}
+            </td>
+            <td>
+              <div class="linea-firma"></div>
+              <b>${mayus(d.firmante2)}</b><br>${txt(d.cargo2,24)}
+            </td>
+          </tr>
+        </table>
+
+        <p class="variante" style="margin-top:26px">${d.tipoFirma === 'Autógrafa'
+          ? 'Las firmas que anteceden son autógrafas, en términos de la fracción VIII del artículo 125 de la Ley General de Sociedades Mercantiles.'
+          : 'Las firmas que anteceden se estampan impresas en facsímil, habiéndose depositado el original de las firmas respectivas en el Registro Público de Comercio en que se encuentra inscrita la sociedad, conforme a la fracción VIII del artículo 125 de la Ley General de Sociedades Mercantiles.'}</p>
+      </div>
+
+      ${reverso}
+
+      ${cupones}
+
+      ${anexo}
+
+      <p class="nota-pie">Documento generado con formato automatizado. El contenido debe cotejarse con los
+      estatutos sociales vigentes, con el libro de registro de acciones y con las actas de asamblea
+      correspondientes, y ser revisado por un abogado con cédula profesional antes de su expedición y firma.</p>
+    `;
+  }
 }
 
 };
@@ -752,6 +1218,21 @@ function descargarWord(){
     `.firmas td{width:50%;text-align:center;padding:0 12px}` +
     `.linea-firma{border-top:1px solid #000;margin-bottom:6px}` +
     `.centro{text-align:center}.der{text-align:right}` +
+    `.orla{border:3px double #000;padding:24pt 26pt}` +
+    `.marca{text-align:center;font-size:10pt;letter-spacing:2pt;color:#555;margin-bottom:10pt}` +
+    `.tbl-datos{border-collapse:collapse;margin-bottom:16pt;font-size:10.5pt}` +
+    `.tbl-datos td{border:1px solid #000;padding:4pt 6pt;width:50%}` +
+    `.tbl-cifras{border-collapse:collapse;margin:8pt 0 10pt;font-size:10.5pt}` +
+    `.tbl-cifras th,.tbl-cifras td{border:1px solid #000;padding:3pt 6pt}` +
+    `.tbl-cifras th{background:#f0f0f0;text-align:left}` +
+    `.tbl-reverso{border-collapse:collapse;margin:6pt 0 14pt;font-size:8pt}` +
+    `.tbl-reverso th,.tbl-reverso td{border:1px solid #000;padding:3pt;text-align:center;height:20pt}` +
+    `.tbl-reverso th{background:#f0f0f0}` +
+    `.tbl-cupones{border-collapse:collapse;margin-top:8pt;table-layout:fixed}` +
+    `.tbl-cupones td{border:1px dashed #000;padding:6pt;font-size:8pt;width:33%}` +
+    `.cnum{font-weight:bold;border-bottom:1px solid #000;padding-bottom:3pt;margin-bottom:4pt}` +
+    `.corte{border-top:1px dashed #999;margin:20pt 0 12pt;text-align:center;font-size:8pt;color:#777;letter-spacing:1pt}` +
+    `.variante{font-size:9pt;color:#444;font-style:italic;border-left:2px solid #999;padding-left:8pt}` +
     `.nota-pie{font-size:9pt;color:#555;font-style:italic}</style>` +
     `</head><body>${cuerpo}</body></html>`;
 

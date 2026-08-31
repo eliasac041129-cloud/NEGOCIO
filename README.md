@@ -16,6 +16,11 @@ Todo lo que necesitas para conseguir tu primer cliente, sin invertir un peso.
 | `ventas/precios.md` | Cuánto cobrar y las reglas para cobrarlo bien. |
 | `ventas/publicidad.md` | Para qué sirve el generador y dónde anunciarte con $0. |
 
+El generador trae cinco documentos: contrato de arrendamiento, pagaré, carta poder simple,
+recibo de renta y **título accionario conforme al artículo 125 de la Ley General de Sociedades
+Mercantiles** (con reverso para endosos y anotaciones, cupones del artículo 126 y variante de
+certificado provisional).
+
 ---
 
 ## Tu ventaja competitiva
