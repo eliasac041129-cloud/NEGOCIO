@@ -147,6 +147,13 @@
     header,.panel{display:none !important}
     .visor{padding:0;max-height:none;overflow:visible}
     #doc{box-shadow:none;max-width:none;margin:0;padding:0;font-size:12pt}
+    /* Anverso, reverso, cupones y anexo, cada uno en su propia hoja. */
+    #doc .corte{page-break-before:always;border-top:none;margin:0 0 16px}
+    #doc .corte span{top:0;font-size:9pt;color:#444}
+    #doc .orla{page-break-inside:avoid}
+    #doc .tbl-cupones td{page-break-inside:avoid}
+    #doc .tbl-reverso{page-break-inside:avoid}
+    #doc .firmas{page-break-inside:avoid}
   }
 </style>
 </head>
@@ -839,6 +846,21 @@ tituloAccionario: {
     const votoPleno = d.tipoAccion === 'Ordinarias, de voto pleno';
     const limitaciones = (d.limitaciones || '').trim();
 
+    /* Redacción corrida de la clase de acción. No se puede usar toLowerCase()
+       sobre la opción del formulario porque tumbaría la sigla LGSM. */
+    const CLASES = {
+      'Ordinarias, de voto pleno': 'ordinarias, de voto pleno',
+      'De voto limitado (art. 113 LGSM)':
+        'de voto limitado, en términos del artículo 113 de la Ley General de Sociedades Mercantiles',
+      'Preferentes, de dividendo preferente y acumulativo':
+        'preferentes, de dividendo preferente y acumulativo',
+      'De goce (art. 137 LGSM)':
+        'de goce, en términos del artículo 137 de la Ley General de Sociedades Mercantiles',
+      'De trabajo (art. 114 LGSM)':
+        'de trabajo, en términos del artículo 114 de la Ley General de Sociedades Mercantiles'
+    };
+    const claseTxt = CLASES[d.tipoAccion] || txt(d.tipoAccion,20);
+
     /* ---- Fracción IV: cuadro de capital ---- */
     const filasCapital = sinVN ? '' : `
       <table class="tbl-cifras">
@@ -890,10 +912,9 @@ tituloAccionario: {
       ? `<b>Derecho de voto pleno</b>, con derecho a ${txt(d.votos,1)} voto por cada acción en las asambleas
          generales ordinarias y extraordinarias de accionistas, en términos de los artículos 113 y 189 de la
          Ley General de Sociedades Mercantiles.`
-      : `<b>Derecho de voto en los términos propios de su clase</b> (${txt(d.tipoAccion,20)}), con
-         ${txt(d.votos,1)} voto por acción exclusivamente en los asuntos que la ley y los estatutos sociales
-         reservan a esta clase de acciones, conforme al artículo 113 de la Ley General de Sociedades
-         Mercantiles.`;
+      : `<b>Derecho de voto en los términos propios de su clase</b>, con ${txt(d.votos,1)} voto por acción
+         exclusivamente en los asuntos que la ley y los estatutos sociales reservan a esta clase de
+         acciones, conforme al artículo 113 de la Ley General de Sociedades Mercantiles.`;
 
     const leyendaExtranjeros = d.clausulaExt === 'Exclusión de extranjeros'
       ? `<b>Cláusula de exclusión de extranjeros.</b> Conforme a la cláusula ____ de los estatutos sociales,
@@ -1048,9 +1069,8 @@ tituloAccionario: {
         ${numeroConLetra(d.accionesSerie)} acciones.</p>
 
         <p class="clausula"><b>${c()}. DERECHOS Y OBLIGACIONES DEL TENEDOR.</b> Las acciones amparadas por
-        este ${provisional ? 'certificado' : 'título'} son <b>${txt(d.tipoAccion,20).toLowerCase()}</b> y
-        confieren a su legítimo tenedor los derechos y le imponen las obligaciones que a continuación se
-        expresan.</p>
+        este ${provisional ? 'certificado' : 'título'} son <b>${claseTxt}</b> y confieren a su legítimo
+        tenedor los derechos y le imponen las obligaciones que a continuación se expresan.</p>
 
         <p class="clausula"><b>A) Derechos.</b></p>
         <p class="clausula" style="padding-left:22px"><b>1.</b> ${derechoVoto}</p>
